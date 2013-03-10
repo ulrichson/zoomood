@@ -224,8 +224,8 @@ initMediaContainer = function(container) {
         }
     }).resizable({
         aspectRatio: aspectRatio,
-        maxWidth: origWidth * 3,
-        maxHeight: origHeight * 3,
+        maxWidth: origWidth,
+        maxHeight: origHeight,
         minWidth: origWidth * 0.05,
         minHeight: origHeight * 0.05,
         resize: resizableResizeFix,
