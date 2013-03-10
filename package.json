@@ -1,13 +1,19 @@
 {
-  "name": "application-name",
+  "name": "zoomood",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "express": "3.1.0",
     "jade": "*",
-    "less-middleware": "*"
+    "jquery-file-upload-middleware": "*",
+    "less-middleware": "*",
+    "mongoose": "*",
+    "twitter-bootstrap-node": "*"
+  },
+  "devDependencies": {
+    "nodemon": "*"
   }
 }

@@ -1,0 +1,62 @@
+/*****************************
+* Layout
+*****************************/
+
+body { background: url(/img/background-pattern/background-pattern-14.png) repeat top left; }
+div#top form { margin: 0 0 0 5px; }
+div#top form span { margin: 0; }
+.modal-footer form { display: inline-block; margin: 0 0 0 10px; }
+
+/*****************************
+* Canvas
+*****************************/
+
+#canvas { height: 100%; position: relative; }
+
+#canvas-wrapper {
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 5px;
+	bottom: 20px;
+	box-shadow: inset rgba(0, 0, 0, 0.3) 0px 0px 15px;
+	left: 20px;
+	position: absolute;
+	right: 20px;
+	top: 50px;
+	width: auto;
+}
+
+.frame { border: 1px dashed #ff2800; border-radius: 10px; }
+
+.mediaContainer { box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px; cursor: move; position: absolute !important; }
+
+.scope {
+	border: 1px dashed #ff2800;
+	border-radius: 20px;
+	cursor: move;
+	position: absolute;
+}
+
+/*****************************
+* File upload
+*****************************/
+
+#dropzone {
+	background-color: lightblue;
+	background-image: url(/img/icon_upload.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	bottom: 100px;
+	display: none;
+	font-weight: bold;
+	left: 100px;
+	margin: 0;
+	opacity: 0.6;
+	position: absolute;
+	right: 100px;
+	text-align: center;
+	top: 100px;
+}
+
+#upload-progress { height: 50px; }
+
+#upload-progress > div.bar { font-size: 2.0em; line-height: 50px; }
