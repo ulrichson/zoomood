@@ -29,7 +29,7 @@ div#top form span { margin: 0; }
 	text-align: center;
 	top: 0;
 	width: 100%;
-	z-index: 100;
+	z-index: 300;
 }
 
 #splash-screen .logo-wrapper { display: table-cell; vertical-align: middle; }
@@ -42,7 +42,7 @@ div#top form span { margin: 0; }
 	width: 500px;
 }
 
-#canvas { height: 100%; position: relative; }
+#canvas { height: 100%; position: relative; z-index: 100 }
 
 #canvas-wrapper {
 	background-color: rgba(0, 0, 0, 0.2);
@@ -74,20 +74,21 @@ div#top form span { margin: 0; }
 *****************************/
 
 #dropzone {
-	background-color: lightblue;
+	background-color: rgba(255, 40, 0, 0.8);
 	background-image: url(/img/icon_upload.png);
 	background-position: center;
 	background-repeat: no-repeat;
-	bottom: 100px;
+	border-radius: 5px;
+	bottom: 0;
 	display: none;
 	font-weight: bold;
-	left: 100px;
+	left: 0;
 	margin: 0;
-	opacity: 0.6;
 	position: absolute;
-	right: 100px;
+	right: 0;
 	text-align: center;
-	top: 100px;
+	top: 0;
+	z-index: 200;
 }
 
 #upload-progress { height: 50px; }
