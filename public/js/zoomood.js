@@ -37,12 +37,19 @@ ajaxUpdateMediaContainer = function(container) {
         // accepts: 'application/json',
         url: '/media/' + container.data('name'),
         type: 'PUT',
+        accepts: {
+            json: 'application/json'
+        },
         contentType: 'application/json',
         data: JSON.stringify({
             scale: container.data('scale'),
             x: container.data('x'),
             y: container.data('y')
-        })
+        }),
+        beforeSend: function(xhr) {
+            // WORKAROUND. For any reason the 'accepts' fields isn't applied
+            xhr.setRequestHeader('Accept', 'application/json');
+        }
     });
 }
 
@@ -104,8 +111,12 @@ updateFrame = function(frame, coords) {
         top: coords.top,
         width: coords.width,
         height: coords.height,
-        position: "absolute"
+        position: 'absolute'
     });
+};
+
+createSplashScreen = function() {
+    return $('<div/>').attr('id', 'splash-screen').append('<img src="/img/zoomood-logo.png" alt="Logo" />');
 };
 
 /***************************
@@ -205,6 +216,16 @@ initMediaContainer = function(container) {
 };
 
 $(function() {
+    // Splash screen
+    var splashScreen = createSplashScreen();
+    splashScreen.prependTo($('#canvas-wrapper'));
+    // $(window).load(function() {
+    //     setTimeout(function() {
+    //         splashScreen.fadeOut(1000);
+    //     }, 500);
+    // });
+
+    // Set media location and size
     $(".mediaContainer img").load(function() {
         initMediaContainer($(this).parent());
     });

@@ -11,6 +11,18 @@ div#top form span { margin: 0; }
 * Canvas
 *****************************/
 
+#splash-screen {
+    background-color: white;
+    border-radius: 5px;
+	bottom: 0;
+	left: 0;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    z-index: 100;
+}
+
 #canvas { height: 100%; position: relative; }
 
 #canvas-wrapper {
