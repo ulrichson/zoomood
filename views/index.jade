@@ -27,6 +27,7 @@ block content
 			div#canvas.span12.zoomContainer
 				each m in media
 					div.mediaContainer(data-name="#{m.name}", data-scale="#{m.scale}", data-x="#{m.x}", data-y="#{m.y}")
+						button.close &times;
 						img.img-rounded(src="#{m.url}", alt="#{m.name}")
 
 	//- Modals

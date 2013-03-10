@@ -12,15 +12,34 @@ div#top form span { margin: 0; }
 *****************************/
 
 #splash-screen {
-    background-color: white;
-    border-radius: 5px;
+	background: white;
+	background-image: -moz-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%), url(/img/background-pattern/background-pattern-14.png);
+	background-image: -ms-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 100%), url(/img/background-pattern/background-pattern-14.png);
+	background-image: -o-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 100%), url(/img/background-pattern/background-pattern-14.png);
+	background-image: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.2))), url(/img/background-pattern/background-pattern-14.png);
+	background-image: -webkit-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 100%), url(/img/background-pattern/background-pattern-14.png);
+	background-image: radial-gradient(ellipse at center,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 100%), url(/img/background-pattern/background-pattern-14.png);
+	border-radius: 5px;
 	bottom: 0;
+	display: table;
+	height: 100%;
 	left: 0;
-    position: absolute;
-    right: 0;
-    text-align: center;
-    top: 0;
-    z-index: 100;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+}
+
+#splash-screen .logo-wrapper { display: table-cell; vertical-align: middle; }
+
+#splash-screen .logo {
+	background-color: white;
+	height: 180px;
+	margin: auto;
+	padding: 10px;
+	width: 500px;
 }
 
 #canvas { height: 100%; position: relative; }
@@ -41,6 +60,7 @@ div#top form span { margin: 0; }
 .frame { border: 1px dashed #ff2800; border-radius: 10px; }
 
 .mediaContainer { box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px; cursor: move; position: absolute !important; }
+.mediaContainer .close { left: 5px; position: absolute; }
 
 .scope {
 	border: 1px dashed #ff2800;

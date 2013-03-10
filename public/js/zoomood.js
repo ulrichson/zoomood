@@ -34,7 +34,6 @@ var overlaps = (function() {
  ***************************/
 ajaxUpdateMediaContainer = function(container) {
     $.ajax({
-        // accepts: 'application/json',
         url: '/media/' + container.data('name'),
         type: 'PUT',
         accepts: {
@@ -49,6 +48,25 @@ ajaxUpdateMediaContainer = function(container) {
         beforeSend: function(xhr) {
             // WORKAROUND. For any reason the 'accepts' fields isn't applied
             xhr.setRequestHeader('Accept', 'application/json');
+        }
+    });
+}
+
+ajaxDeleteMediaContainer = function(container) {
+    $.ajax({
+        url: '/media/' + container.data('name'),
+        type: 'DELETE',
+        accepts: {
+            json: 'application/json'
+        },
+        beforeSend: function(xhr) {
+            // WORKAROUND. For any reason the 'accepts' fields isn't applied
+            xhr.setRequestHeader('Accept', 'application/json');
+        },
+        success: function(data, textStatus, jqXHR) {
+            container.effect('explode', function() {
+                container.remove();
+            })
         }
     });
 }
@@ -116,14 +134,20 @@ updateFrame = function(frame, coords) {
 };
 
 createSplashScreen = function() {
-    return $('<div/>').attr('id', 'splash-screen').append('<img src="/img/zoomood-logo.png" alt="Logo" />');
+    var logoWrapper = $('<div />').addClass('logo-wrapper');
+    var logoContainer = $('<div />').addClass('logo').css({
+        borderRadius: 20,
+        boxShadow: "rgba(0, 0, 0, 0.3) 0 0 20px"
+    }).append('<p><img src="/img/zoomood-logo.png" alt="Logo" /></p><p style="font-size: 2.0em"><i class="icon-spinner"></i> Loading canvas</p></div>');
+    logoWrapper.append(logoContainer);
+    return $('<div />').attr('id', 'splash-screen').append(logoWrapper);
 };
 
 /***************************
  * Media handling
  ***************************/
 addMediaContainer = function(url, name, x, y, scale) {
-    var container = $('<div class="mediaContainer" data-name="' + name + '" data-scale="' + scale + '" data-x="' + x + '" data-y="' + y + '"><img class="img-rounded" src="' + url + '" alt="' + name + '" /></div>').appendTo("#canvas");
+    var container = $('<div class="mediaContainer" data-name="' + name + '" data-scale="' + scale + '" data-x="' + x + '" data-y="' + y + '"><button class="close">&times;</button><img class="img-rounded" src="' + url + '" alt="' + name + '" /></div>').appendTo("#canvas");
     $(container).children('img:first').load(function() {
         initMediaContainer(container);
     });
@@ -200,8 +224,8 @@ initMediaContainer = function(container) {
         }
     }).resizable({
         aspectRatio: aspectRatio,
-        maxWidth: origWidth,
-        maxHeight: origHeight,
+        maxWidth: origWidth * 3,
+        maxHeight: origHeight * 3,
         minWidth: origWidth * 0.05,
         minHeight: origHeight * 0.05,
         resize: resizableResizeFix,
@@ -213,17 +237,20 @@ initMediaContainer = function(container) {
     });
 
     container.dblclick(zoomHandler);
+    container.children('.close').click(function() {
+        ajaxDeleteMediaContainer($(this).parent());
+    });
 };
 
 $(function() {
     // Splash screen
     var splashScreen = createSplashScreen();
     splashScreen.prependTo($('#canvas-wrapper'));
-    // $(window).load(function() {
-    //     setTimeout(function() {
-    //         splashScreen.fadeOut(1000);
-    //     }, 500);
-    // });
+    $(window).load(function() {
+        setTimeout(function() {
+            splashScreen.fadeOut(1000);
+        }, 500);
+    });
 
     // Set media location and size
     $(".mediaContainer img").load(function() {

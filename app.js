@@ -142,14 +142,23 @@ app.delete('/media/:name', function(req, res) {
     Media.remove({
         name: req.params.name
     }, function(err)  {
-        res.redirect('/');
+        res.format({
+            html: function() {
+                res.redirect('/');
+            },
+            json: function() {
+                res.json(err)
+            },
+            text: function() {
+                res.send(err);
+            }
+        });
     });
 });
 
 // UPDATE media
 app.put('/media/:name', function(req, res) {
     var b = req.body;
-
     Media.update({
         name: req.params.name
     }, {
