@@ -113,11 +113,19 @@ app.get('/media', function(req, res) {
 
 // GET media
 app.get('/media/:name', function(req, res) {
-    var media = Media.find({ name: req.params.name }, function(err, docs) {
+    var media = Media.find({
+        name: req.params.name
+    }, function(err, docs) {
         res.format({
-            html: function() { res.send(''); },
-            json: function() { res.json(docs[0]); },
-            text: function() { res.send(''); }
+            html: function() {
+                res.send('');
+            },
+            json: function() {
+                res.json(docs[0]);
+            },
+            text: function() {
+                res.send('');
+            }
         });
     })
 });
@@ -135,6 +143,31 @@ app.delete('/media/:name', function(req, res) {
         name: req.params.name
     }, function(err)  {
         res.redirect('/');
+    });
+});
+
+// UPDATE media
+app.put('/media/:name', function(req, res) {
+    var b = req.body;
+
+    Media.update({
+        name: req.params.name
+    }, {
+        scale: b.scale,
+        x: b.x,
+        y: b.y
+    }, function(err) {
+        res.format({
+            html: function() {
+                res.send(err);
+            },
+            json: function() {
+                res.json(err)
+            },
+            text: function() {
+                res.send(err);
+            }
+        });
     });
 });
 

@@ -29,36 +29,26 @@ var overlaps = (function() {
     };
 })();
 
-addMediaContainer = function(url, name, x, y, scale) {
-    var container = $('<div class="mediaContainer" data-name="' + name + '" data-scale="' + scale + '" data-x="' + x + '" data-y="' + y + '"><img class="img-rounded" src="' + url + '" alt="' + name + '" /></div>').appendTo("#canvas");
-    $(container).children('img:first').load(function() {
-        initMediaContainer(container);
+/***************************
+ * AJAX calls
+ ***************************/
+ajaxUpdateMediaContainer = function(container) {
+    $.ajax({
+        // accepts: 'application/json',
+        url: '/media/' + container.data('name'),
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            scale: container.data('scale'),
+            x: container.data('x'),
+            y: container.data('y')
+        })
     });
-    return container;
 }
 
-calculateCssCoordinates = function(x0, y0, x1, y1) {
-    return {
-        left: x0 > x1 ? x1 : x0,
-        top: y0 > y1 ? y1 : y0,
-        width: x0 > x1 ? x0 - x1 : x1 - x0,
-        height: y0 > y1 ? y0 - y1 : y1 - y0
-    }
-};
-
-zoomHandler = function() {
-    $(this).addClass("focused");
-    $(this).zoomTo({
-        animationendcallback: function() {
-            // Update zoom factor
-            zoom = matrixToArray($("#canvas").css("-webkit-transform"))[0];
-            console.log("new zoom is " + zoom);
-            $(this).removeClass("focused");
-        },
-        root: $("#canvas")
-    });
-};
-
+/***************************
+ * jQuery UI zoom fixes
+ ***************************/
 draggableStartFix = function(evt, ui) {
     ui.position.left = 0;
     ui.position.top = 0;
@@ -87,6 +77,18 @@ resizableResizeFix = function(event, ui) {
     ui.size.height = newHeight;
 }
 
+/***************************
+ * Helper
+ ***************************/
+calculateCssCoordinates = function(x0, y0, x1, y1) {
+    return {
+        left: x0 > x1 ? x1 : x0,
+        top: y0 > y1 ? y1 : y0,
+        width: x0 > x1 ? x0 - x1 : x1 - x0,
+        height: y0 > y1 ? y0 - y1 : y1 - y0
+    }
+};
+
 matrixToArray = function(matrix) {
     return matrix.substr(7, matrix.length - 8).split(', ');
 };
@@ -104,7 +106,31 @@ updateFrame = function(frame, coords) {
         height: coords.height,
         position: "absolute"
     });
+};
+
+/***************************
+ * Media handling
+ ***************************/
+addMediaContainer = function(url, name, x, y, scale) {
+    var container = $('<div class="mediaContainer" data-name="' + name + '" data-scale="' + scale + '" data-x="' + x + '" data-y="' + y + '"><img class="img-rounded" src="' + url + '" alt="' + name + '" /></div>').appendTo("#canvas");
+    $(container).children('img:first').load(function() {
+        initMediaContainer(container);
+    });
+    return container;
 }
+
+zoomHandler = function() {
+    $(this).addClass("focused");
+    $(this).zoomTo({
+        animationendcallback: function() {
+            // Update zoom factor
+            zoom = matrixToArray($("#canvas").css("-webkit-transform"))[0];
+            console.log("new zoom is " + zoom);
+            $(this).removeClass("focused");
+        },
+        root: $("#canvas")
+    });
+};
 
 initMediaContainer = function(container) {
     var origWidth = $(container).children("img:first").width();
@@ -134,9 +160,10 @@ initMediaContainer = function(container) {
         drag: draggableDragFix,
         start: draggableStartFix,
         stop: function() {
-            $(this).data("x", container.css("left"));
-            $(this).data("y", container.css("top"));
+            $(this).data("x", parseInt(container.css("left")));
+            $(this).data("y", parseInt(container.css("top")));
             var element = $(this);
+            ajaxUpdateMediaContainer(element);
 
             // Check to which frames it belongs
             // $(".frame").each(function(key, value) {
@@ -170,6 +197,7 @@ initMediaContainer = function(container) {
         start: function() {},
         stop: function(event, ui) {
             $(this).data("scale", ui.size.width / origWidth);
+            ajaxUpdateMediaContainer($(this));
         }
     });
 
