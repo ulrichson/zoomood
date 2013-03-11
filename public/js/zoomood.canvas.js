@@ -57,6 +57,14 @@ $(function() {
 	/*******************************
 	 * AJAX calls
 	 *******************************/
+	var ajaxSaveCanvas = function() {
+		// update all media
+		var objects = fabricCanvas.getObjects();
+		for (i in objects) {
+			ajaxUpdateMedia(objects[i]);
+		}
+	}
+
 	var ajaxUpdateMedia = function(media) {
 		$.ajax({
 			url: '/media/' + media.name,
@@ -128,6 +136,16 @@ $(function() {
 					}).scale(data.scale));
 				});
 			}
+
+			// var objects = fabricCanvas.getObjects();
+			// for (i in objects) {
+			// 	objects[i].setShadow({
+			// 		blue: 20,
+			// 		color: 'rgba(0, 0, 0, 1)',
+			// 		offsetX: 0,
+			// 		offsetY: 0
+			// 	});
+			// }
 		});
 	};
 
@@ -308,6 +326,9 @@ $(function() {
 					x: lastX,
 					y: lastY
 				};
+				
+				// save current state
+				ajaxSaveCanvas();
 			}
 		}, false);
 
@@ -325,11 +346,8 @@ $(function() {
 			if (delta > 0) zoomIn(lastX, lastY);
 			else zoomOut(lastX, lastY);
 
-			// update all media
-			var objects = fabricCanvas.getObjects();
-			for (i in objects) {
-				ajaxUpdateMedia(objects[i]);
-			}
+			// save current state
+			ajaxSaveCanvas();
 
 			return evt.preventDefault() && false;
 		}
