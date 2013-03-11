@@ -42,7 +42,7 @@ div#top form span { margin: 0; }
 	width: 500px;
 }
 
-#canvas { height: 100%; position: relative; z-index: 100 }
+#canvas { height: 100%; position: relative; width: 100%; /*z-index: 100;*/ }
 
 #canvas-wrapper {
 	background-color: rgba(0, 0, 0, 0.2);

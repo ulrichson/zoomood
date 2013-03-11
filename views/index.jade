@@ -5,9 +5,9 @@ block content
 	div.container-fluid
 		div.row-fluid
 			div#top.span12.btn-toolbar
-				a#btn-add-frames.btn(data-toggle="button")
-					i.icon-retweet
-					span &nbsp;Add frames
+				//- a#btn-add-frames.btn(data-toggle="button")
+				//- 	i.icon-retweet
+				//- 	span &nbsp;Add frames
 
 				a#btn-reset-view.btn
 					i.icon-remove
@@ -25,11 +25,12 @@ block content
 
 		div#canvas-wrapper.row-fluid
 			div#dropzone
-			div#canvas.span12.zoomContainer
-				each m in media
-					div.mediaContainer(data-name="#{m.name}", data-scale="#{m.scale}", data-x="#{m.x}", data-y="#{m.y}")
-						button.close &times;
-						img.img-rounded(src="#{m.url}", alt="#{m.name}")
+			//- div#canvas.span12.zoomContainer
+			//- 	each m in media
+			//- 		div.mediaContainer(data-name="#{m.name}", data-scale="#{m.scale}", data-x="#{m.x}", data-y="#{m.y}")
+			//- 			button.close &times;
+			//- 			img.img-rounded(src="#{m.url}", alt="#{m.name}")
+			canvas#canvas
 
 	//- Modals
 	div#modal-upload.modal.hide.fade(role="dialog")
@@ -55,44 +56,5 @@ block content
 	//- Scripts
 	script
 		$(function() {
-			$('#fileupload').fileupload({
-				dataType : 'json',
-				dropZone: $('#dropzone'),
-				done: function (e, data) {
-					var name = data.result[0].name;
-					console.log('File uploaded: ' + name);
-					$.getJSON('/media/' + name, function(data) {
-						addMediaContainer(data.url, data.name, data.x, data.x, data.scale);
-					});
-				},
-				progressall : function(e, data) {
-					var progress = parseInt(data.loaded / data.total * 100, 10);
-					$('#upload-progress .bar').css('width', progress + '%');
-					$('#upload-progress .bar').text(progress + '%');
-					if (progress == 100) {
-						window.setTimeout(function() {
-							$('#modal-upload').modal('hide');
-						}, 300);
-					}
-				},
-				start: function(e) {
-					$('#modal-upload').modal({
-						backdrop: 'static',
-						keyboard: false
-					});
-				} 
-			});
-
-			$(document).bind('dragover', function (e) {
-				var timeout = window.dropZoneTimeout,
-					dropZone = $('#dropzone');
-				if (timeout) {
-					clearTimeout(timeout);
-				}
-				window.dropZoneTimeout = setTimeout(function () {
-					window.dropZoneTimeout = null;
-					dropZone.hide();
-				}, 100);
-				dropZone.show();
-			});
+			
 		})

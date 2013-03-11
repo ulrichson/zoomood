@@ -62,6 +62,7 @@ var MediaSchema = mongoose.Schema({
     url: String,
     thumbnail_url: String,
     scale: Number,
+    angle: Number,
     x: Number,
     y: Number,
 });
@@ -78,8 +79,9 @@ upload.on('end', function(fileInfo) {
         url: fileInfo.url,
         thumbnail_url: fileInfo.thumbnail_url,
         scale: 0.2,
-        x: 10,
-        y: 10,
+        angle: 0,
+        x: 300,
+        y: 300,
     }).save();
 });
 
@@ -104,9 +106,19 @@ app.get('/', function(req, res) {
 // GET all media
 app.get('/media', function(req, res) {
     var media = Media.find({}, function(err, docs) {
-        res.render('media', {
-            media: docs,
-            title: 'Media'
+        res.format({
+            html: function() {
+                res.render('media', {
+                    media: docs,
+                    title: 'Media'
+                });
+            },
+            json: function() {
+                res.json(docs);
+            },
+            text: function() {
+                res.send('');
+            }
         });
     });
 });
@@ -118,7 +130,10 @@ app.get('/media/:name', function(req, res) {
     }, function(err, docs) {
         res.format({
             html: function() {
-                res.send('');
+                res.render('media', {
+                    media: docs,
+                    title: 'Media'
+                });
             },
             json: function() {
                 res.json(docs[0]);
@@ -163,6 +178,7 @@ app.put('/media/:name', function(req, res) {
         name: req.params.name
     }, {
         scale: b.scale,
+        angle: b.angle,
         x: b.x,
         y: b.y
     }, function(err) {
