@@ -42,14 +42,14 @@
 // };
 
 // fabric.ZoomoodImage.async = true;
-
+var fabricCanvas;
 
 $(function() {
 	/*******************************
 	 * Variables
 	 *******************************/
 	var canvas;
-	var fabricCanvas;
+
 
 	var lastX, lastY;
 	var dragStart, dragged;
@@ -139,37 +139,24 @@ $(function() {
 					hideSplashScreen();
 				}
 			}
-
-			// var objects = fabricCanvas.getObjects();
-			// for (i in objects) {
-			// 	objects[i].setShadow({
-			// 		blue: 20,
-			// 		color: 'rgba(0, 0, 0, 1)',
-			// 		offsetX: 0,
-			// 		offsetY: 0
-			// 	});
-			// }
 		});
 	};
 
 	var addZoomoodImage = function(img, data) {
-		var obj = img;
-		obj.set({
+		img.set({
 			angle: data.angle,
 			left: data.x,
 			top: data.y,
 			lockUniScaling: true,
 			name: data.name,
 			delete_url: data.delete_url
+		}).scale(data.scale).setShadow({
+			color: 'rgba(0,0,0,0.6)',
+			blur: 20,
+			offsetX: 0,
+			offsetY: 0
 		});
-		obj.scale(data.scale);
-		// obj.setShadow({
-		// 	color: 'rgba(1,0,0,1)',
-		// 	blue: 20,
-		// 	offsetX: 0,
-		// 	offsetY: 0
-		// });
-		fabricCanvas.add(obj)
+		fabricCanvas.add(img)
 	};
 
 	/*******************************
@@ -182,7 +169,7 @@ $(function() {
 		if (fabricCanvas == null) {
 			fabricCanvas = new fabric.Canvas('canvas');
 			fabricCanvas.on('object:modified', function(options) {
-				console.log('object was modified: ' + JSON.stringify(options.target));
+				// console.log('object was modified: ' + JSON.stringify(options.target));
 				ajaxUpdateMedia(options.target);
 			});
 		}
@@ -313,7 +300,7 @@ $(function() {
 		fabricCanvas.renderAll();
 	};
 
-	var resetZoom = function() {
+	var resetView = function() {
 		translate(-canvas.width / 2, -canvas.height / 2);
 		var objects = fabricCanvas.getObjects();
 		for (var i in objects) {
@@ -403,27 +390,36 @@ $(function() {
 
 	// ATTENTION: experimental, doesn't seem to work...
 	var calculateCanvasBound = function() {
-		var ret = null;
-		var length = fabricCanvas.getObjects().length;
-		if (length > 0) {
-			console.dir(fabricCanvas.item(0));
-			console.log(fabricCanvas.item(0).type);
-			var bound = fabricCanvas.item(0).getBoundingRect();
-			ret = {
-				left: bound.left,
-				top: bound.top,
-				width: bound.width,
-				height: bound.height
-			}
-			for (i = 1; i < length; i++) {
-				bound = fabricCanvas.item(i).getBoundingRect();
-				if (bound.left < ret.left) ret.left = bound.left;
-				if (bound.top < ret.top) ret.top = bound.top;
-				if (bound.width + bound.left > ret.width) ret.width = bound.width + bound.left;
-				if (bound.height + bound.top > ret.height) ret.width = bound.height + bound.top;
-			}
+		var xCoords = []; //[this.oCoords.tl.x, this.oCoords.tr.x, this.oCoords.br.x, this.oCoords.bl.x];
+		var yCoords = []; //[this.oCoords.tl.y, this.oCoords.tr.y, this.oCoords.br.y, this.oCoords.bl.y];
+		
+		var objects = fabricCanvas.getObjects();
+		for (i in objects) {
+			var c = objects[i].oCoords;
+			xCoords.push(c.tl.x);
+			xCoords.push(c.tr.x);
+			xCoords.push(c.br.x);
+			xCoords.push(c.bl.x);
+			yCoords.push(c.tl.y);
+			yCoords.push(c.tr.y);
+			yCoords.push(c.br.y);
+			yCoords.push(c.bl.y);
 		}
-		return ret;
+
+		var minX = fabric.util.array.min(xCoords);
+		var maxX = fabric.util.array.max(xCoords);
+		var width = Math.abs(minX - maxX);
+		
+		var minY = fabric.util.array.min(yCoords);
+		var maxY = fabric.util.array.max(yCoords);
+		var height = Math.abs(minY - maxY);
+
+		return {
+			left: minX,
+			top: minY,
+			width: width,
+			height: height
+		};
 	};
 
 	var showSplashScreen = function() {
@@ -481,11 +477,11 @@ $(function() {
 		}
 	});
 
-	$('#btn-reset-view').click(function() {
-		resetZoom();
-		// showCanvasBoundingRect(true);
-		setSelection(true);
-	});
+	// $('#btn-reset-view').click(function() {
+	// 	resetView();
+	// 	// showCanvasBoundingRect(true);
+	// 	setSelection(true);
+	// });
 
 	$(document).bind('dragover', function(e) {
 		var timeout = window.dropZoneTimeout,
@@ -507,4 +503,5 @@ $(function() {
 	initCanvas();
 	initFileUpload();
 	ajaxGetMedia();
+	// showCanvasBoundingRect(true);
 });
