@@ -54,7 +54,6 @@ $(function() {
 	var lastX, lastY;
 	var dragStart, dragged;
 
-	var canvasScale = 1.0;
 	var scaleFactor = 1.1;
 	var spacePressed = false;
 	var selectionEnabled = true;
@@ -249,7 +248,7 @@ $(function() {
 	};
 
 	var zoomIn = function(originX, originY) {
-		canvasScale = canvasScale * scaleFactor;
+		// canvasScale = canvasScale * scaleFactor;
 		translate(-originX, -originY);
 		var objects = fabricCanvas.getObjects();
 		for (var i in objects) {
@@ -275,7 +274,7 @@ $(function() {
 	};
 
 	function zoomOut(originX, originY) {
-		canvasScale = canvasScale / scaleFactor;
+		// canvasScale = canvasScale / scaleFactor;
 		translate(-originX, -originY);
 		var objects = fabricCanvas.getObjects();
 		for (var i in objects) {
@@ -300,8 +299,11 @@ $(function() {
 		fabricCanvas.renderAll();
 	};
 
-	var resetView = function() {
-		translate(-canvas.width / 2, -canvas.height / 2);
+	var scale = function(scale) {
+		var vcx = fabricCanvas.getWidth() / 2;
+		var vcy = fabricCanvas.getHeight() / 2;
+
+		translate(-vcx, -vcy);
 		var objects = fabricCanvas.getObjects();
 		for (var i in objects) {
 			var scaleX = objects[i].scaleX;
@@ -309,10 +311,10 @@ $(function() {
 			var left = objects[i].left;
 			var top = objects[i].top;
 
-			var tempScaleX = scaleX * (1 / canvasScale);
-			var tempScaleY = scaleY * (1 / canvasScale);
-			var tempLeft = left * 1 / canvasScale;
-			var tempTop = top * 1 / canvasScale;
+			var tempScaleX = scaleX * scale;
+			var tempScaleY = scaleY * scale;
+			var tempLeft = left * scale;
+			var tempTop = top * scale;
 
 			objects[i].scaleX = tempScaleX;
 			objects[i].scaleY = tempScaleY;
@@ -321,9 +323,33 @@ $(function() {
 
 			objects[i].setCoords();
 		}
-		translate(canvas.width / 2, canvas.height / 2);
+		translate(vcx, vcy);
 		fabricCanvas.renderAll();
-		canvasScale = 1;
+	};
+
+	var resetView = function() {
+		var bound = calculateCanvasBound();
+
+		var vw = fabricCanvas.getWidth();
+		var vh = fabricCanvas.getHeight();
+		var vr = vw / vh;
+
+		var bw = bound.width;
+		var bh = bound.height;
+		var bx = bound.left;
+		var by = bound.top;
+		var br = bw / bh;
+
+		// Translate to center
+		var dx = vw / 2 - bx - bw / 2;
+		var dy = vh / 2 - by - bh / 2;
+		translate(dx, dy);
+
+		// Scale to fit bounds
+		var s =  vr < br ? vw / bw : vh / bh;
+		scale(s * 0.95);
+
+		ajaxSaveCanvas();
 	};
 
 	var addCanvasEventListener = function(canvas) {
@@ -388,10 +414,9 @@ $(function() {
 		}
 	};
 
-	// ATTENTION: experimental, doesn't seem to work...
 	var calculateCanvasBound = function() {
-		var xCoords = []; //[this.oCoords.tl.x, this.oCoords.tr.x, this.oCoords.br.x, this.oCoords.bl.x];
-		var yCoords = []; //[this.oCoords.tl.y, this.oCoords.tr.y, this.oCoords.br.y, this.oCoords.bl.y];
+		var xCoords = [];
+		var yCoords = [];
 		
 		var objects = fabricCanvas.getObjects();
 		for (i in objects) {
@@ -477,11 +502,11 @@ $(function() {
 		}
 	});
 
-	// $('#btn-reset-view').click(function() {
-	// 	resetView();
-	// 	// showCanvasBoundingRect(true);
-	// 	setSelection(true);
-	// });
+	$('#btn-reset-view').click(function() {
+		resetView();
+		// showCanvasBoundingRect(true);
+		// setSelection(true);
+	});
 
 	$(document).bind('dragover', function(e) {
 		var timeout = window.dropZoneTimeout,
