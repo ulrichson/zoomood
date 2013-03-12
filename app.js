@@ -6,7 +6,8 @@ var express = require('express'),
     http = require('http'),
     upload = require('jquery-file-upload-middleware'),
     mongoose = require('mongoose'),
-    path = require('path');
+    path = require('path'),
+    uuid = require('node-uuid');
 
 var app = express();
 
@@ -69,6 +70,11 @@ var MediaSchema = mongoose.Schema({
 
 var Media = mongoose.model('Media', MediaSchema);
 
+upload.on('begin', function(fileInfo) {
+    var ext = fileInfo.name.substr(fileInfo.name.lastIndexOf('.') + 1);
+    fileInfo.name = uuid.v4() + '.' + ext;
+});
+
 upload.on('end', function(fileInfo) {
     new Media({
         name: fileInfo.name,
@@ -83,6 +89,15 @@ upload.on('end', function(fileInfo) {
         x: 300,
         y: 300,
     }).save();
+    console.log('File uploaded: ' + fileInfo.name);
+});
+
+upload.on('delete', function(fileName) {
+    Media.remove({
+        name: fileName
+    }, function(err) {
+        console.log('File deleted: ' + fileName);
+    });
 });
 
 upload.on('error', function(e) {
@@ -156,7 +171,7 @@ app.delete('/media/all', function(req, res) {
 app.delete('/media/:name', function(req, res) {
     Media.remove({
         name: req.params.name
-    }, function(err)  {
+    }, function(err) {
         res.format({
             html: function() {
                 res.redirect('/');

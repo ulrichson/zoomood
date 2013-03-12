@@ -3,43 +3,48 @@
 // - http://jsfiddle.net/Q3TMA/
 // - http://stackoverflow.com/questions/11272772/fabricjs-how-to-save-canvas-on-server-with-custom-attributes
 
+/*******************************
+ * Extensions
+ *******************************/
+// fabric.ZoomoodImage = fabric.util.createClass(fabric.Image, {
+// 	type: 'zoomood-image',
+// 	async: true,
+// 	initialize: function(element, options) {
+// 		this.callSuper('initialize', element, options);
+// 		options && this.set({
+// 			'name': options.name,
+// 			'delete_url': options.delete_url
+// 		});
+// 	},
+// 	toObject: function() {
+// 		return fabric.util.object.extend(this.callSuper('toObject'), {
+// 			name: this.name,
+// 			delete_url: delete_url
+// 		});
+// 	}
+// });
+
+// fabric.ZoomoodImage.fromObject = function(object, callback) {
+// 	fabric.util.loadImage(object.src, function(img) {
+// 		callback && callback(new fabric.ZoomoodImage(img, object));
+// 	});
+// };
+
+// fabric.ZoomoodImage.fromURL = function(url, callback, imgOptions) {
+// 	var img = fabric.document.createElement('img');
+// 	img.onload = function() {
+// 		if (callback) {
+// 			callback(new fabric.ZoomoodImage(img, imgOptions));
+// 		}
+// 		img = img.onload = null;
+// 	};
+// 	img.src = url;
+// };
+
+// fabric.ZoomoodImage.async = true;
+
+
 $(function() {
-	/*******************************
-	 * Extensions
-	 *******************************/
-	fabric.ZoomoodImage = fabric.util.createClass(fabric.Image, {
-		type: 'zoomood-image',
-		async: true,
-		initialize: function(element, options) {
-			this.callSuper('initialize', element, options);
-			options && this.set('name', options.name);
-		},
-		toObject: function() {
-			return fabric.util.object.extend(this.callSuper('toObject'), {
-				name: this.name
-			});
-		}
-	});
-
-	fabric.ZoomoodImage.fromObject = function(object, callback) {
-		fabric.util.loadImage(object.src, function(img) {
-			callback && callback(new fabric.NamedImage(img, object));
-		});
-	};
-
-	fabric.ZoomoodImage.fromURL = function(url, callback, imgOptions) {
-		var img = fabric.document.createElement('img');
-		img.onload = function() {
-			if (callback) {
-				callback(new fabric.ZoomoodImage(img, imgOptions));
-			}
-			img = img.onload = null;
-		};
-		img.src = url;
-	};
-
-	fabric.ZoomoodImage.async = true;
-
 	/*******************************
 	 * Variables
 	 *******************************/
@@ -53,6 +58,8 @@ $(function() {
 	var scaleFactor = 1.1;
 	var spacePressed = false;
 	var selectionEnabled = true;
+
+	var splashScreen;
 
 	/*******************************
 	 * AJAX calls
@@ -91,7 +98,8 @@ $(function() {
 
 	var ajaxDeleteMedia = function(media) {
 		$.ajax({
-			url: '/media/' + media.name,
+			// url: '/media/' + media.name,
+			url: media.delete_url,
 			type: 'DELETE',
 			accepts: {
 				json: 'application/json'
@@ -114,27 +122,22 @@ $(function() {
 			if (data.length) {
 				$.each(data, function(key, value) {
 					console.log('media loaded (' + key + '): ' + value.name);
-					fabric.ZoomoodImage.fromURL(value.url, function(img) {
-						fabricCanvas.add(img.set({
-							angle: value.angle,
-							left: value.x,
-							top: value.y,
-							lockUniScaling: true,
-							name: value.name
-						}).scale(value.scale));
+					fabric.Image.fromURL(value.url, function(img) {
+						addZoomoodImage(img, value);
+						if (key == data.length - 1) {
+							hideSplashScreen();
+						}
 					});
 				});
 			} else {
-				console.log('media loaded: ' + data.name);
-				fabric.ZoomoodImage.fromURL(data.url, function(img) {
-					fabricCanvas.add(img.set({
-						angle: data.angle,
-						left: data.x,
-						top: data.y,
-						lockUniScaling: true,
-						name: data.name
-					}).scale(data.scale));
-				});
+				if (!$.isEmptyObject(data)) {
+					console.log('media loaded: ' + data.name);
+					fabric.Image.fromURL(data.url, function(img) {
+						addZoomoodImage(img, data);
+					});
+				} else {
+					hideSplashScreen();
+				}
 			}
 
 			// var objects = fabricCanvas.getObjects();
@@ -149,6 +152,26 @@ $(function() {
 		});
 	};
 
+	var addZoomoodImage = function(img, data) {
+		var obj = img;
+		obj.set({
+			angle: data.angle,
+			left: data.x,
+			top: data.y,
+			lockUniScaling: true,
+			name: data.name,
+			delete_url: data.delete_url
+		});
+		obj.scale(data.scale);
+		// obj.setShadow({
+		// 	color: 'rgba(1,0,0,1)',
+		// 	blue: 20,
+		// 	offsetX: 0,
+		// 	offsetY: 0
+		// });
+		fabricCanvas.add(obj)
+	};
+
 	/*******************************
 	 * Functions
 	 *******************************/
@@ -159,7 +182,7 @@ $(function() {
 		if (fabricCanvas == null) {
 			fabricCanvas = new fabric.Canvas('canvas');
 			fabricCanvas.on('object:modified', function(options) {
-				// console.log('object was modified: ' + JSON.stringify(options.target));
+				console.log('object was modified: ' + JSON.stringify(options.target));
 				ajaxUpdateMedia(options.target);
 			});
 		}
@@ -205,6 +228,20 @@ $(function() {
 				});
 			}
 		});
+	}
+
+	var showCanvasBoundingRect = function(show) {
+		fabricCanvas.on('after:render', show ? function() {
+			fabricCanvas.contextContainer.strokeStyle = '#ff2800';
+			var bound = calculateCanvasBound();
+			if (bound) {
+				fabricCanvas.contextContainer.strokeRect(
+				bound.left + 0.5,
+				bound.top + 0.5,
+				bound.width,
+				bound.height);
+			}
+		} : null);
 	}
 
 	var translate = function(x, y) {
@@ -326,7 +363,7 @@ $(function() {
 					x: lastX,
 					y: lastY
 				};
-				
+
 				// save current state
 				ajaxSaveCanvas();
 			}
@@ -361,6 +398,48 @@ $(function() {
 			objects[i].hasControls = selection;
 			objects[i].hasBorders = selection;
 			objects[i].selection = selection;
+		}
+	};
+
+	// ATTENTION: experimental, doesn't seem to work...
+	var calculateCanvasBound = function() {
+		var ret = null;
+		var length = fabricCanvas.getObjects().length;
+		if (length > 0) {
+			console.dir(fabricCanvas.item(0));
+			console.log(fabricCanvas.item(0).type);
+			var bound = fabricCanvas.item(0).getBoundingRect();
+			ret = {
+				left: bound.left,
+				top: bound.top,
+				width: bound.width,
+				height: bound.height
+			}
+			for (i = 1; i < length; i++) {
+				bound = fabricCanvas.item(i).getBoundingRect();
+				if (bound.left < ret.left) ret.left = bound.left;
+				if (bound.top < ret.top) ret.top = bound.top;
+				if (bound.width + bound.left > ret.width) ret.width = bound.width + bound.left;
+				if (bound.height + bound.top > ret.height) ret.width = bound.height + bound.top;
+			}
+		}
+		return ret;
+	};
+
+	var showSplashScreen = function() {
+		// Splash screen
+		splashScreen = createSplashScreen();
+		splashScreen.prependTo($('#canvas-wrapper'));
+	};
+
+	var hideSplashScreen = function() {
+		if (splashScreen) {
+			setTimeout(function() {
+				splashScreen.fadeOut(1000, function() {
+					$(this).remove();
+				});
+				splashScreen = null;
+			}, 1500);
 		}
 	};
 
@@ -404,6 +483,7 @@ $(function() {
 
 	$('#btn-reset-view').click(function() {
 		resetZoom();
+		// showCanvasBoundingRect(true);
 		setSelection(true);
 	});
 
@@ -423,6 +503,7 @@ $(function() {
 	/*******************************
 	 * Code
 	 *******************************/
+	showSplashScreen();
 	initCanvas();
 	initFileUpload();
 	ajaxGetMedia();
