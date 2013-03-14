@@ -8,7 +8,8 @@
  *******************************/
 // fabric.ZoomoodImage = fabric.util.createClass(fabric.Image, {
 // 	type: 'zoomood-image',
-// 	async: true,
+// 	H_PADDING: 10,
+// 	V_PADDING: 10,
 // 	initialize: function(element, options) {
 // 		this.callSuper('initialize', element, options);
 // 		options && this.set({
@@ -21,6 +22,15 @@
 // 			name: this.name,
 // 			delete_url: delete_url
 // 		});
+// 	},
+// 	_render: function(ctx) {
+// 		if (this.loaded) {
+// 			ctx.fillStyle = '#fff';
+// 			ctx.fillRect(-(this.width / 2) - this.H_PADDING, -(this.height / 2) - this.H_PADDING,
+// 			this.width + this.H_PADDING * 2,
+// 			this.height + this.V_PADDING * 2);
+// 			ctx.drawImage(this.image, -this.width / 2, -this.height / 2);
+// 		}
 // 	}
 // });
 
@@ -49,7 +59,6 @@ $(function() {
 	 * Variables
 	 *******************************/
 	var canvas;
-
 
 	var lastX, lastY;
 	var dragStart, dragged;
@@ -142,6 +151,26 @@ $(function() {
 	};
 
 	var addZoomoodImage = function(img, data) {
+		// var radius = 15;
+		// var x = -img.width / 2;
+		// var y = -img.height / 2;
+		// img.clipTo = function(ctx) {
+		// 	// start at left top
+		// 	ctx.moveTo(x + radius, y);
+		// 	// right top
+		// 	ctx.lineTo(x + img.width - radius, y);
+		// 	ctx.quadraticCurveTo(x + img.width, y, x + img.width, y + radius);
+		// 	// right bottom
+		// 	ctx.lineTo(x + img.width, y + img.height - radius);
+		// 	ctx.quadraticCurveTo(x + img.width, y + img.height, x + img.width - radius, y + img.height);
+		// 	// left bottom
+		// 	ctx.lineTo(x + radius, y + img.height);
+		// 	ctx.quadraticCurveTo(x, y + img.height, x, y + img.height - radius);
+		// 	// back to left top
+		// 	ctx.lineTo(x, y + radius);
+		// 	ctx.quadraticCurveTo(x, y, x + radius, y);
+		// };
+
 		img.set({
 			angle: data.angle,
 			left: data.x,
@@ -150,11 +179,12 @@ $(function() {
 			name: data.name,
 			delete_url: data.delete_url
 		}).scale(data.scale).setShadow({
-			color: 'rgba(0,0,0,0.6)',
-			blur: 20,
+			color: 'rgba(0, 0, 0, 0.2)',
+			blur: 10,
 			offsetX: 0,
 			offsetY: 0
 		});
+
 		fabricCanvas.add(img)
 	};
 
@@ -346,7 +376,7 @@ $(function() {
 		translate(dx, dy);
 
 		// Scale to fit bounds
-		var s =  vr < br ? vw / bw : vh / bh;
+		var s = vr < br ? vw / bw : vh / bh;
 		scale(s * 0.95);
 
 		ajaxSaveCanvas();
@@ -417,7 +447,7 @@ $(function() {
 	var calculateCanvasBound = function() {
 		var xCoords = [];
 		var yCoords = [];
-		
+
 		var objects = fabricCanvas.getObjects();
 		for (i in objects) {
 			var c = objects[i].oCoords;
@@ -434,7 +464,7 @@ $(function() {
 		var minX = fabric.util.array.min(xCoords);
 		var maxX = fabric.util.array.max(xCoords);
 		var width = Math.abs(minX - maxX);
-		
+
 		var minY = fabric.util.array.min(yCoords);
 		var maxY = fabric.util.array.max(yCoords);
 		var height = Math.abs(minY - maxY);

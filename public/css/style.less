@@ -1,0 +1,103 @@
+@backgroundImageUrl: "/img/background-pattern/background-pattern-17.png";
+@canvasShadow: inset rgba(0, 0, 0, 0.1) 0px 0px 15px;
+@canvasBackgroundColor: rgba(255, 255, 255, 0.5);
+@splashScreenGradientStartColor: rgba(0, 0, 0, 0);
+@splashScreenGradientEndColor: rgba(0, 0, 0, 0.05);
+
+
+/*****************************
+* Layout
+*****************************/
+
+body { background: url(@backgroundImageUrl) repeat top left; }
+div#top form { margin: 0 0 0 5px; }
+div#top form span { margin: 0; }
+.modal-footer form { display: inline-block; margin: 0 0 0 10px; }
+
+/*****************************
+* Canvas
+*****************************/
+
+#splash-screen {
+	background: white;
+	background-image: -moz-radial-gradient(center, ellipse cover,  @splashScreenGradientStartColor 0%, @splashScreenGradientEndColor 100%), url(@backgroundImageUrl);
+	background-image: -ms-radial-gradient(center, ellipse cover,  @splashScreenGradientStartColor 0%,@splashScreenGradientEndColor 100%), url(@backgroundImageUrl);
+	background-image: -o-radial-gradient(center, ellipse cover,  @splashScreenGradientStartColor 0%,@splashScreenGradientEndColor 100%), url(@backgroundImageUrl);
+	background-image: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,@splashScreenGradientStartColor), color-stop(100%,@splashScreenGradientEndColor)), url(@backgroundImageUrl);
+	background-image: -webkit-radial-gradient(center, ellipse cover,  @splashScreenGradientStartColor 0%,@splashScreenGradientEndColor 100%), url(@backgroundImageUrl);
+	background-image: radial-gradient(ellipse at center,  @splashScreenGradientStartColor 0%,@splashScreenGradientEndColor 100%), url(@backgroundImageUrl);
+	border-radius: 5px;
+	bottom: 0;
+	display: table;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	top: 0;
+	width: 100%;
+	z-index: 300;
+}
+
+#splash-screen .logo-wrapper { display: table-cell; vertical-align: middle; }
+
+#splash-screen .logo {
+	background-color: white;
+	height: 190px;
+	margin: auto;
+	padding: 10px;
+	width: 500px;
+}
+
+#canvas { height: 100%; position: relative; width: 100%; /*z-index: 100;*/ }
+
+#canvas-wrapper {
+	background-color: @canvasBackgroundColor;
+	border-radius: 5px;
+	bottom: 20px;
+	box-shadow: @canvasShadow;
+	left: 20px;
+	overflow: hidden;
+	position: absolute;
+	right: 20px;
+	top: 50px;
+	width: auto;
+}
+
+.frame { border: 1px dashed #ff2800; border-radius: 10px; }
+
+.mediaContainer { box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px; cursor: move; position: absolute !important; }
+.mediaContainer .close { left: 5px; position: absolute; }
+
+.scope {
+	border: 1px dashed #ff2800;
+	border-radius: 20px;
+	cursor: move;
+	position: absolute;
+}
+
+/*****************************
+* File upload
+*****************************/
+
+#dropzone {
+	background-color: rgba(255, 40, 0, 0.8);
+	background-image: url(/img/icon_upload.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	border-radius: 5px;
+	bottom: 0;
+	display: none;
+	font-weight: bold;
+	left: 0;
+	margin: 0;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	top: 0;
+	z-index: 200;
+}
+
+#upload-progress { height: 50px; }
+
+#upload-progress > div.bar { font-size: 2.0em; line-height: 50px; }
