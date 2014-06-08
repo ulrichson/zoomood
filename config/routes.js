@@ -1,5 +1,4 @@
-var http = require('http'),
-    media = require('../app/controllers/media')
+var media = require('../app/controllers/media');
 
 module.exports = function(app, Media) {
   // GET index
@@ -19,11 +18,4 @@ module.exports = function(app, Media) {
 
   // UPDATE media
   app.put('/media/:name', media.update);
-
-  /**
-   * Server.
-   */
-  http.createServer(app).listen(app.get('port'), function() {
-    console.log("Express server listening on port " + app.get('port'));
-  });
 }

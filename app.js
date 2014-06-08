@@ -6,7 +6,18 @@ var express = require('express'),
     mongoose = require('mongoose'),
     env = process.env.NODE_ENV || 'development',
     fs = require('fs'),
+    http = require('http'),
     config = require('./config/config')[env];
+
+/**
+ * Main app.
+ */
+
+// App
+var app = express();
+
+// DB
+mongoose.connect(config.db);
 
 // Bootstrap models
 var models_path = __dirname + '/app/models'
@@ -14,16 +25,12 @@ fs.readdirSync(models_path).forEach(function (file) {
   if (~file.indexOf('.js')) require(models_path + '/' + file)
 })
 
-var app = express();
-
 // Config
 require('./config/express')(app, config);
-
-// Mongodb
-mongoose.connect(config.db);
-
-// Media upload
 require('./config/upload')(app, config);
-
-// Routes
 require('./config/routes')(app);
+
+// Server
+http.createServer(app).listen(app.get('port'), function() {
+  console.log("Express server listening on port " + app.get('port'));
+});
