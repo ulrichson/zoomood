@@ -1,6 +1,6 @@
 # zoomood
 
-A virtual mood board that allows you to drag&drop media to a zoomable canvas.
+A virtual mood board that allows you to organize media on a zoomable canvas.
 
 ## Setup
 ```
