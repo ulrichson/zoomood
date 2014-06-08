@@ -55,6 +55,7 @@
 var fabricCanvas;
 
 $(function() {
+
   /*******************************
    * Variables
    *******************************/
@@ -81,6 +82,16 @@ $(function() {
   }
 
   var ajaxUpdateMedia = function(media) {
+    // sync to server
+    io.emit('update media', {
+      name: media.name,
+      scale: media.get('scaleX'),
+      angle: media.get('angle'),
+      x: media.get('left'),
+      y: media.get('top')
+    });
+
+    // save data
     $.ajax({
       url: '/media/' + media.name,
       type: 'PUT',
@@ -259,6 +270,25 @@ $(function() {
       }
     } : null);
   }
+
+  io.on('update media', function(data) {
+    console.log('a client updated media', data);
+
+    // var objects = fabricCanvas.getObjects();
+
+    // for (var i in objects) {
+    //   console.log('TEST', objects[i], data);
+    //   if (data.name === objects[i].name) {
+    //     objects[i].left += data.left;
+    //     objects[i].top += data.top;
+    //     objects[i].setCoords();
+    //     console.log('YES');
+    //   }
+    // }
+
+    // fabricCanvas.renderAll();
+  })
+
 
   var translate = function(x, y) {
     var objects = fabricCanvas.getObjects();

@@ -31,6 +31,12 @@ require('./config/upload')(app, config);
 require('./config/routes')(app);
 
 // Server
-http.createServer(app).listen(app.get('port'), function() {
+var server = http.createServer(app);
+
+// Socket.io
+require('./config/socket')(server);
+
+// Start server
+server.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });

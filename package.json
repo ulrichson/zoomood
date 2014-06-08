@@ -13,6 +13,7 @@
     "less-middleware": "*",
     "mongoose": "*",
     "node-uuid": "*",
+    "socket.io": "^1.0.4",
     "twitter-bootstrap-node": "*"
   },
   "devDependencies": {
