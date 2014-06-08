@@ -1,6 +1,8 @@
-var upload = require('jquery-file-upload-middleware');
+var upload = require('jquery-file-upload-middleware'),
+    mongoose = require('mongoose'),
+    Media = mongoose.model('Media');
 
-module.exports = function(app, config, mongoose) {
+module.exports = function(app, config) {
 
   // middleware
   upload.configure({
@@ -13,23 +15,6 @@ module.exports = function(app, config, mongoose) {
       }
     }
   });
-
-  // Media upload
-  var MediaSchema = mongoose.Schema({
-    name: String,
-    originalName: String,
-    size: Number,
-    type: String,
-    delete_url: String,
-    url: String,
-    thumbnail_url: String,
-    scale: Number,
-    angle: Number,
-    x: Number,
-    y: Number,
-  });
-
-  var Media = mongoose.model('Media', MediaSchema);
 
   upload.on('begin', function(fileInfo) {
     var ext = fileInfo.name.substr(fileInfo.name.lastIndexOf('.') + 1);
@@ -64,6 +49,4 @@ module.exports = function(app, config, mongoose) {
   upload.on('error', function(e) {
     console.log(e.message);
   });
-
-  return Media;
 }

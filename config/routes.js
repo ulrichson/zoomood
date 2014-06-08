@@ -1,108 +1,24 @@
-var http = require('http');
+var http = require('http'),
+    media = require('../app/controllers/media')
 
 module.exports = function(app, Media) {
   // GET index
-  app.get('/', function(req, res) {
-    Media.find({}, function(err, docs) {
-      res.render('index', {
-        media: docs,
-        title: 'Welcome to zoomood!'
-      });
-    });
-  });
+  app.get('/', media.home);
 
   // GET all media
-  app.get('/media', function(req, res) {
-    Media.find({}, function(err, docs) {
-      res.format({
-        html: function() {
-          res.render('media', {
-            media: docs,
-            title: 'Media'
-          });
-        },
-        json: function() {
-          res.json(docs);
-        },
-        text: function() {
-          res.send('');
-        }
-      });
-    });
-  });
+  app.get('/media', media.getAll);
 
   // GET media
-  app.get('/media/:name', function(req, res) {
-    Media.find({
-      name: req.params.name
-    }, function(err, docs) {
-      res.format({
-        html: function() {
-          res.render('media', {
-            media: docs,
-            title: 'Media'
-          });
-        },
-        json: function() {
-          res.json(docs[0]);
-        },
-        text: function() {
-          res.send('');
-        }
-      });
-    })
-  });
+  app.get('/media/:name', media.show);
 
   // DELETE all media
-  app.delete('/media/all', function(req, res) {
-    Media.remove({}, function(err) {
-      res.redirect('/');
-    });
-  });
+  app.delete('/media/all', media.deleteAll);
 
   // DELETE media
-  app.delete('/media/:name', function(req, res) {
-    Media.remove({
-      name: req.params.name
-    }, function(err) {
-      res.format({
-        html: function() {
-          res.redirect('/');
-        },
-        json: function() {
-          res.json(err)
-        },
-        text: function() {
-          res.send(err);
-        }
-      });
-    });
-  });
+  app.delete('/media/:name', media.deleteOne);
 
   // UPDATE media
-  app.put('/media/:name', function(req, res) {
-    var b = req.body;
-    Media.update({
-      name: req.params.name
-    }, {
-      scale: b.scale,
-      angle: b.angle,
-      x: b.x,
-      y: b.y
-    }, function(err) {
-      res.format({
-        html: function() {
-          res.send(err);
-        },
-        json: function() {
-          res.json(err)
-        },
-        text: function() {
-          res.send(err);
-        }
-      });
-    });
-  });
+  app.put('/media/:name', media.update);
 
   /**
    * Server.
