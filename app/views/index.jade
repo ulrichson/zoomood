@@ -1,54 +1,54 @@
 extends layout
 
 block content
-	//- Visible content
-	div.container-fluid
-		div.row-fluid
-			div#top.span12.btn-toolbar
-				//- a#btn-add-frames.btn(data-toggle="button")
-				//- 	i.icon-retweet
-				//- 	span &nbsp;Add frames
+  //- Visible content
+  div.container-fluid
+    div.row-fluid
+      div#top.span12.btn-toolbar
+        //- a#btn-add-frames.btn(data-toggle="button")
+        //-   i.icon-retweet
+        //-   span &nbsp;Add frames
 
-				a#btn-reset-view.btn
-					i.icon-refresh
-					span &nbsp;View all
+        a#btn-reset-view.btn
+          i.icon-refresh
+          span &nbsp;View all
 
-				form#fileupload.pull-right(action="/upload", method="POST", enctype="multipart/form-data")
-					span.btn.btn-success.fileinput-button
-						i.icon-plus.icon-white
-						span &nbsp;Add files...
-						input(type="file", name="files[]", multiple)
+        form#fileupload.pull-right(action="/upload", method="POST", enctype="multipart/form-data")
+          span.btn.btn-success.fileinput-button
+            i.icon-plus.icon-white
+            span &nbsp;Add files...
+            input(type="file", name="files[]", multiple)
 
-				a#btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
-					i.icon-trash.icon-white
-					span &nbsp;Delete all
+        a#btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
+          i.icon-trash.icon-white
+          span &nbsp;Delete all
 
-		div#canvas-wrapper.row-fluid
-			div#dropzone
-			//- div#canvas.span12.zoomContainer
-			//- 	each m in media
-			//- 		div.mediaContainer(data-name="#{m.name}", data-scale="#{m.scale}", data-x="#{m.x}", data-y="#{m.y}")
-			//- 			button.close &times;
-			//- 			img.img-rounded(src="#{m.url}", alt="#{m.name}")
-			canvas#canvas
+    div#canvas-wrapper.row-fluid
+      div#dropzone
+      //- div#canvas.span12.zoomContainer
+      //-   each m in media
+      //-     div.mediaContainer(data-name="#{m.name}", data-scale="#{m.scale}", data-x="#{m.x}", data-y="#{m.y}")
+      //-       button.close &times;
+      //-       img.img-rounded(src="#{m.url}", alt="#{m.name}")
+      canvas#canvas
 
-	//- Modals
-	div#modal-upload.modal.hide.fade(role="dialog")
-		div.modal-header
-			h3 Uploading media
-		div.modal-body
-			p Please wait until all media is uploaded.
-			div#upload-progress.progress
-				div.bar(style="width: 0")
+  //- Modals
+  div#modal-upload.modal.hide.fade(role="dialog")
+    div.modal-header
+      h3 Uploading media
+    div.modal-body
+      p Please wait until all media is uploaded.
+      div#upload-progress.progress
+        div.bar(style="width: 0")
 
-	div#modal-confirm-delete-all.modal.hide.fade(role="dialog")
-		div.modal-header
-			button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
-			h3 Confirm delete
-		div.modal-body
-			p Do you really want to delete all media?
-		div.modal-footer
-			button.btn(data-dismiss="modal", aria-hidden="true") Cancel
-			form#delete-all(action="/media/all", method="POST")
-				input(type="hidden", name="_method", value="DELETE")
-				button.btn.btn-danger DELETE
+  div#modal-confirm-delete-all.modal.hide.fade(role="dialog")
+    div.modal-header
+      button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+      h3 Confirm delete
+    div.modal-body
+      p Do you really want to delete all media?
+    div.modal-footer
+      button.btn(data-dismiss="modal", aria-hidden="true") Cancel
+      form#delete-all(action="/media/all", method="POST")
+        input(type="hidden", name="_method", value="DELETE")
+        button.btn.btn-danger DELETE
