@@ -6,6 +6,9 @@
     "start": "NODE_ENV=development nodemon app.js",
     "postinstall": "bower install"
   },
+  "engines": {
+    "node": "0.10.22"
+  },
   "dependencies": {
     "express": "3.1.0",
     "jade": "*",
