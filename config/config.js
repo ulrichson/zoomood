@@ -17,7 +17,7 @@ module.exports = {
     }
   },
   production: {
-    db: 'mongodb://localhost/zoomood-production',
+    db: process.env.MONGO_URL, // this var is user:pass@host:port/dbname
     root: rootPath,
     app: {
       name: 'Nodejs Express Mongoose Demo'
