@@ -9,7 +9,7 @@ module.exports = function(server) {
     })
 
     socket.on('update media', function(data) {
-      console.log('media updated', data);
+      console.log('a client update media', data);
 
       io.emit('update media', data);
     })

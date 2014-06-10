@@ -6,33 +6,34 @@ html
 
     //- libs
     link(rel="stylesheet", href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css", media="screen")
-    link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.min.css", media="screen")
-    link(rel="stylesheet", href="/bower_components/jquery-file-upload/css/jquery.fileupload.css", media="screen")
-    link(rel="stylesheet", href="/bower_components/jquery-file-upload/css/jquery.fileupload-ui.css", media="screen")
-    link(rel="stylesheet", href="/bower_components/font-awesome/css/font-awesome.css", media="screen")
-
+    link(rel="stylesheet", href="lib/bootstrap/dist/css/bootstrap.min.css", media="screen")
+    link(rel="stylesheet", href="lib/jquery-file-upload/css/jquery.fileupload.css", media="screen")
+    link(rel="stylesheet", href="lib/jquery-file-upload/css/jquery.fileupload-ui.css", media="screen")
+    link(rel="stylesheet", href="lib/font-awesome/css/font-awesome.css", media="screen")
     //- app
     link(rel="stylesheet", href="/css/style.css", media="screen")
 
+    script(data-main="js/app",src="lib/requirejs/require.js")
+
     //- libs
-    script(src="http://code.jquery.com/jquery.js")
-    script(src="http://code.jquery.com/ui/1.10.1/jquery-ui.js")
-    script(src="/bower_components/bootstrap/dist/js/bootstrap.js")
-    script(src="/bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js")
-    script(src="/bower_components/jquery-file-upload/js/jquery.iframe-transport.js")
-    script(src="/bower_components/jquery-file-upload/js/jquery.fileupload.js")
-    script(src="/bower_components/fabric/dist/fabric.min.js")
-    script(src="/socket.io/socket.io.js")
+    // script(src="http://code.jquery.com/jquery.js")
+    // script(src="http://code.jquery.com/ui/1.10.1/jquery-ui.js")
+    // script(src="/bower_components/bootstrap/dist/js/bootstrap.js")
+    // script(src="/bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js")
+    // script(src="/bower_components/jquery-file-upload/js/jquery.iframe-transport.js")
+    // script(src="/bower_components/jquery-file-upload/js/jquery.fileupload.js")
+    // script(src="/bower_components/fabric/dist/fabric.min.js")
+    // script(src="/socket.io/socket.io.js")
 
-    //- app
-    script(src="/js/zoomood.common.js")
-    //- For HTML version
-    //- script(src="/js/vendor/zoomooz/jquery.zoomooz.min.js")
-    //- script(src="/js/vendor/jquery.transform2d.js")
-    //- script(src="/js/zoomood.html.js")
+    // //- app
+    // script(src="/js/zoomood.common.js")
+    // //- For HTML version
+    // //- script(src="/js/vendor/zoomooz/jquery.zoomooz.min.js")
+    // //- script(src="/js/vendor/jquery.transform2d.js")
+    // //- script(src="/js/zoomood.html.js")
 
-    //- For Canvas version
-    script(src="/js/socket.js")
-    script(src="/js/zoomood.canvas.js")
+    // //- For Canvas version
+    // script(src="/js/socket.js")
+    // script(src="/js/zoomood.canvas.js")
   body
     block content
