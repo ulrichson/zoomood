@@ -10,11 +10,17 @@ module.exports = {
     }
   },
   test: {
-    db: 'mongodb://localhost/zoomood_test',
+    db: 'mongodb://localhost/zoomood-test',
     root: rootPath,
     app: {
       name: 'Nodejs Express Mongoose Demo'
     }
   },
-  production: {}
+  production: {
+    db: 'mongodb://localhost/zoomood-production',
+    root: rootPath,
+    app: {
+      name: 'Nodejs Express Mongoose Demo'
+    }
+  }
 }
