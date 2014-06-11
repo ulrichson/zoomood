@@ -15,3 +15,10 @@ npm start
 ## Requirements
 - node.js
 - MongoDB
+
+## Roadmap
+
+* Realtime collaboration
+* Figures, lines, text
+* Save moodboards
+* Authentication
