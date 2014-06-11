@@ -4,6 +4,7 @@
 
 var express = require('express'),
     mongoose = require('mongoose'),
+    newrelic = require('newrelic'),
     env = process.env.NODE_ENV || 'development',
     fs = require('fs'),
     http = require('http'),
