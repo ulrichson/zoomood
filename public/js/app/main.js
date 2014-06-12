@@ -1,7 +1,6 @@
 define([
     'jquery',
-    './zoomood.canvas',
-    './zoomood.common'
+    './zoomood.canvas'
   ], function($) {
   $(function() {
     console.log('looool');

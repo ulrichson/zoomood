@@ -26,7 +26,7 @@ gulp.task('build', ['less'], function() {
 gulp.task('default', function () {
   server.listen();
   gulp.watch('public/css/less/**/*.less', ['less']);
-  gulp.watch('public/css/style.css').on('change', function(file) {
+  gulp.watch(['public/**/*.css','app/**/*']).on('change', function(file) {
     server.changed(file.path);
   });
 });

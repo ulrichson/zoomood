@@ -22,7 +22,7 @@ define([
     var spacePressed = false;
     var selectionEnabled = true;
 
-    var splashScreen;
+    var splashScreen = $('.splash-screen');
 
     /*******************************
      * AJAX calls
@@ -465,18 +465,16 @@ define([
     };
 
     var showSplashScreen = function() {
-      // Splash screen
-      splashScreen = createSplashScreen();
-      splashScreen.prependTo($('#canvas-wrapper'));
+      splashScreen.fadeIn();
     };
 
     var hideSplashScreen = function() {
       if (splashScreen) {
-        setTimeout(function() {
-          splashScreen.fadeOut(1000, function() {
-            $(this).remove();
-          });
-          splashScreen = null;
+        setTimeout(function() { // simulate loading
+          splashScreen.addClass('hide-start');
+          setTimeout(function() {
+            splashScreen.addClass('hide-end');
+          }, 300); // animation time
         }, 1500);
       }
     };
