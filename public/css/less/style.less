@@ -1,9 +1,9 @@
 // Libs
-@import (less) "//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css";
+@import "//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css";
+@import "//fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,800";
+@import "//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css";
 @import (less) "../../lib/bootstrap/dist/css/bootstrap.min.css";
 @import (less) "../../lib/jquery-file-upload/css/jquery.fileupload-ui.css";
-@import (less) "../../lib/font-awesome/css/font-awesome.css";
-@import (less) url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,800);
 
 // Vars
 @import "globals/variables";
@@ -17,3 +17,46 @@
 @import "modules/fileupload";
 @import "modules/splash-screen";
 @import "modules/loader";
+
+@btn-color: rgba(0,0,0,0.2);
+@btn-color-hover: rgba(0,0,0,0.6);
+
+.top-toolbar {
+  height: 55px;
+  background-color: transparent;
+  z-index: 1000000;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 10px 10px 10px 5px;
+
+  .btn {
+    transition: color 0.2s, border-color 0.2s;
+    height: 35px;
+    line-height: 32px;
+    padding: 0 15px;
+    background-color: transparent;
+    color: @btn-color;
+    &:hover {
+      cursor: pointer;
+      color: @btn-color-hover;
+    }
+    i {
+      margin-left: 6px;
+    }
+  }
+}
+
+.btn-main-menu {
+  font-size: 1.7em;
+  border: none;
+}
+
+.btn-share-board {
+  border: 1px solid @btn-color;
+  border-radius: 999px;
+  &:hover {
+    border-color: @btn-color-hover;
+  }
+}

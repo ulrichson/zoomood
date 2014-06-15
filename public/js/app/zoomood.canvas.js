@@ -169,7 +169,7 @@ define([
       }
 
       // take index [1] since fabric.js produces an extra canvas (buffer technique?)
-      canvas = document.getElementsByTagName('canvas')[1];
+      canvas = $('#canvas');
       canvas.width = canvasDomWidth;
       canvas.height = canvasDomHeight;
       fabricCanvas.setWidth(canvasDomWidth);
@@ -367,7 +367,7 @@ define([
     };
 
     var addCanvasEventListener = function(canvas) {
-      canvas.addEventListener('mousedown', function(evt) {
+      canvas.on('mousedown', function(evt) {
         if (spacePressed) {
           document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
           lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
@@ -380,7 +380,7 @@ define([
         }
       }, false);
 
-      canvas.addEventListener('mousemove', function(evt) {
+      canvas.on('mousemove', function(evt) {
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
         dragged = true;
@@ -396,12 +396,12 @@ define([
         }
       }, false);
 
-      canvas.addEventListener('mouseup', function(evt) {
+      canvas.on('mouseup', function(evt) {
         dragStart = null;
       }, false);
 
-      canvas.addEventListener('DOMMouseScroll', handleScroll, false);
-      canvas.addEventListener('mousewheel', handleScroll, false);
+      canvas.on('DOMMouseScroll', handleScroll, false);
+      canvas.on('mousewheel', handleScroll, false);
     };
 
     var handleScroll = function(evt) {
@@ -482,7 +482,7 @@ define([
     /*******************************
      * Events
      *******************************/
-    window.addEventListener('resize', function() {
+    $(window).on('resize', function() {
       console.log('canvas resized');
       initCanvas();
     });
@@ -538,9 +538,7 @@ define([
 
     /*******************************
      * Code
-     *******************************/
-    showSplashScreen();
-    initCanvas();
+     *******************************/ initCanvas();
     initFileUpload();
     ajaxGetMedia();
     // showCanvasBoundingRect(true);

@@ -2,29 +2,27 @@
 * Canvas
 *****************************/
 
-#canvas { height: 100%; position: relative; width: 100%; /*z-index: 100;*/ }
+.canvas {
 
-#canvas-wrapper {
-  background-color: @canvasBackgroundColor;
-  border-radius: 5px;
-  bottom: 20px;
-  box-shadow: @canvasShadow;
-  left: 20px;
-  overflow: hidden;
+}
+
+.canvas-wrapper {
   position: absolute;
-  right: 20px;
-  top: 50px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: @canvasBackgroundColor;
+  overflow: hidden;
   width: auto;
 }
 
-.frame { border: 1px dashed #ff2800; border-radius: 10px; }
+// .mediaContainer { box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px; cursor: move; position: absolute !important; }
+// .mediaContainer .close { left: 5px; position: absolute; }
 
-.mediaContainer { box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px; cursor: move; position: absolute !important; }
-.mediaContainer .close { left: 5px; position: absolute; }
-
-.scope {
-  border: 1px dashed #ff2800;
-  border-radius: 20px;
-  cursor: move;
-  position: absolute;
-}
+// .scope {
+//   border: 1px dashed #ff2800;
+//   border-radius: 20px;
+//   cursor: move;
+//   position: absolute;
+// }
