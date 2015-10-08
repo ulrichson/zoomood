@@ -1,9 +1,9 @@
 {
-  "name": "zoomood",
+  "name": "Zommood Whiteboard",
   "version": "0.0.0",
-  "homepage": "https://github.com/javoire/zoomood",
+  "homepage": "https://github.com/ulrichson/zoomood",
   "authors": [
-    "Ulrich Lehner <...>",
+    "Ulrich Lehner <me@ulrichlehner.com>",
     "Jonatan Dahl <dahl.jonatan@hotmail.com>"
   ],
   "license": "MIT",
@@ -22,7 +22,8 @@
     "zoomooz": "~1.1.6",
     "fabric": "1.4.5",
     "bootstrap": "~3.1.1",
-    "font-awesome": "~4.1.0"
+    "font-awesome": "~4.1.0",
+    "requirejs": "2.1.x"
   },
   "devDependencies": {
     "css-loaders": "~1.1.1"
