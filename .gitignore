@@ -18,3 +18,4 @@ cover_html
 test.js
 .idea
 public/uploads/
+public/lib/
