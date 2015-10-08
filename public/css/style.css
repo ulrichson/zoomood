@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import "//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css";
 @import "//fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,800";
 @import "//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css";
@@ -5884,7 +5885,6 @@ button.close {
     display: none !important;
   }
 }
-@charset "UTF-8";
 /*
  * jQuery File Upload UI Plugin CSS 9.0.0
  * https://github.com/blueimp/jQuery-File-Upload
@@ -6109,7 +6109,7 @@ body {
   }
   33%,
   67% {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(255, 255, 255, 0.5);
   }
   100% {
     background-color: transparent;
@@ -6121,7 +6121,7 @@ body {
   }
   33%,
   67% {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(255, 255, 255, 0.5);
   }
   100% {
     background-color: transparent;

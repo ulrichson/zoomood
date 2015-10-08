@@ -1,6 +1,7 @@
-var media = require('../app/controllers/media');
+module.exports = function(app, config) {
 
-module.exports = function(app, Media) {
+  var media = require('../app/controllers/media')(config);
+
   // GET index
   app.get('/', media.home);
 
@@ -18,4 +19,7 @@ module.exports = function(app, Media) {
 
   // UPDATE media
   app.put('/media/:name', media.update);
+
+  // POST media
+  app.post('/media', media.post);
 }

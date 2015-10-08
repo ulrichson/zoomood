@@ -9,8 +9,14 @@ npm install
 
 ## Run
 ```
-npm start
+node app.js
 ```
+
+Furthermore, MongoDB must be running.
+
+## Test
+
+`(echo -n '{"image_base64": "'; base64 ~/Desktop/test.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @- localhost:3000/media`
 
 ## Requirements
 - node.js
@@ -18,7 +24,3 @@ npm start
 
 ## Roadmap
 
-* Realtime collaboration
-* Figures, lines, text
-* Save moodboards
-* Authentication

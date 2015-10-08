@@ -1,12 +1,14 @@
 define([
     'jquery',
-    'socketio',
+    // 'socketio',
     'fabric',
     'jquery.fileupload',
-    'jquery.ui.widget'
-  ], function($, io, fabric) {
-  var fabricCanvas,
-      socket = io.connect('http://localhost');
+    'jquery.ui.widget',
+    'bootstrap'
+//  ], function($, io, fabric) {
+//  var fabricCanvas,
+//      socket = io.connect('http://localhost');
+    ], function($, fabric) {
 
   $(function() {
 
@@ -14,6 +16,7 @@ define([
      * Variables
      *******************************/
     var canvas;
+    var fabricCanvas
 
     var lastX, lastY;
     var dragStart, dragged;
@@ -37,13 +40,13 @@ define([
 
     var ajaxUpdateMedia = function(media) {
       // sync to server
-      socket.emit('update media', {
+      /*socket.emit('update media', {
         name: media.name,
         scale: media.get('scaleX'),
         angle: media.get('angle'),
         x: media.get('left'),
         y: media.get('top')
-      });
+      });*/
 
       // save data
       $.ajax({
@@ -188,7 +191,7 @@ define([
         dataType: 'json',
         dropZone: $('#dropzone'),
         done: function(e, data) {
-          var name = data.result[0].name;
+          var name = data.result.files[0].name;
           console.log('file uploaded: ' + name);
           ajaxGetMedia(name);
         },
@@ -225,7 +228,7 @@ define([
       } : null);
     }
 
-    socket.on('update media', function(data) {
+    /*socket.on('update media', function(data) {
       console.log('a client updated media', data);
 
       // var objects = fabricCanvas.getObjects();
@@ -241,7 +244,7 @@ define([
       // }
 
       // fabricCanvas.renderAll();
-    })
+    })*/
 
 
     var translate = function(x, y) {
@@ -538,7 +541,8 @@ define([
 
     /*******************************
      * Code
-     *******************************/ initCanvas();
+     *******************************/
+    initCanvas();
     initFileUpload();
     ajaxGetMedia();
     // showCanvasBoundingRect(true);

@@ -1,13 +1,14 @@
 var upload = require('jquery-file-upload-middleware'),
     mongoose = require('mongoose'),
-    Media = mongoose.model('Media');
+    Media = mongoose.model('Media'),
+    uuid = require('node-uuid');
 
 module.exports = function(app, config) {
 
   // middleware
   upload.configure({
-    uploadDir: config.root + '/public/uploads',
-    uploadUrl: '/uploads',
+    uploadDir: config.root + '/public/files',
+    uploadUrl: '/upload',
     imageVersions: {
       thumbnail: {
         width: 80,

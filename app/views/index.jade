@@ -4,11 +4,11 @@ block content
   div.top-toolbar
     //- .btn.fa.fa-bars.btn-main-menu
     .main-menu
-      .btn.btn-add-media
-        | Add item
-        i.fa.fa-plus
-      form.fileupload(action="/upload", method="POST", enctype="multipart/form-data")
-        input(type="file", name="files[]", multiple)
+      //- form#fileupload(action="/upload", method="POST", enctype="multipart/form-data")
+      //-   .btn.btn-add-media
+      //-   | Add item
+      //-   i.fa.fa-plus
+      //-   input(type="file", name="files[]", multiple)
       .btn.btn-reset-view
         | View all
         i.fa.fa-arrows
@@ -33,7 +33,7 @@ block content
     canvas.canvas#canvas
 
   //- Modals
-  div.modal-upload.modal.hide.fade(role="dialog")
+  div#modal-upload.modal-upload.modal.hide.fade(role="dialog")
     div.modal-header
       h3 Uploading media
     div.modal-body

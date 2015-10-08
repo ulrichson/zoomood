@@ -4,7 +4,7 @@
 
 var express = require('express'),
     mongoose = require('mongoose'),
-    newrelic = require('newrelic'),
+    // newrelic = require('newrelic'),
     env = process.env.NODE_ENV || 'development',
     fs = require('fs'),
     http = require('http'),
@@ -29,13 +29,13 @@ fs.readdirSync(models_path).forEach(function (file) {
 // Config
 require('./config/express')(app, config);
 require('./config/upload')(app, config);
-require('./config/routes')(app);
+require('./config/routes')(app, config);
 
 // Server
 var server = http.createServer(app);
 
 // Socket.io
-require('./config/socket')(server);
+// require('./config/socket')(server);
 
 // Start server
 server.listen(app.get('port'), function() {
