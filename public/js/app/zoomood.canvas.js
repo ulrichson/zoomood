@@ -83,8 +83,7 @@ define([
 
     var ajaxDeleteMedia = function(media) {
       $.ajax({
-        // url: '/media/' + media.name,
-        url: media.delete_url,
+        url: '/media/' + media.name,
         type: 'DELETE',
         accepts: {
           json: 'application/json'
@@ -175,7 +174,6 @@ define([
       if (fabricCanvas == null) {
         fabricCanvas = new fabric.Canvas('canvas');
         fabricCanvas.on('object:modified', function(options) {
-          // console.log('object was modified: ' + JSON.stringify(options.target));
           ajaxUpdateMedia(options.target);
         });
       }
@@ -192,7 +190,7 @@ define([
 
       addCanvasEventListener(canvas);
 
-      console.log('canvas initialized (w=' + canvasDomWidth + ', h=' + canvasDomHeight + ')');
+      console.log('canvas initialized (w: ' + canvasDomWidth + 'px, h: ' + canvasDomHeight + 'px)');
     };
 
     var initFileUpload = function() {
