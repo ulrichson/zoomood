@@ -172,7 +172,7 @@ define([
       }
 
       // take index [1] since fabric.js produces an extra canvas (buffer technique?)
-      canvas = $('#canvas');
+      canvas = document.getElementsByTagName('canvas')[1];
       canvas.width = canvasDomWidth;
       canvas.height = canvasDomHeight;
       fabricCanvas.setWidth(canvasDomWidth);
@@ -370,7 +370,7 @@ define([
     };
 
     var addCanvasEventListener = function(canvas) {
-      canvas.on('mousedown', function(evt) {
+      canvas.addEventListener('mousedown', function(evt) {
         if (spacePressed) {
           document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
           lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
@@ -383,7 +383,7 @@ define([
         }
       }, false);
 
-      canvas.on('mousemove', function(evt) {
+      canvas.addEventListener('mousemove', function(evt) {
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
         dragged = true;
@@ -399,12 +399,12 @@ define([
         }
       }, false);
 
-      canvas.on('mouseup', function(evt) {
+      canvas.addEventListener('mouseup', function(evt) {
         dragStart = null;
       }, false);
 
-      canvas.on('DOMMouseScroll', handleScroll, false);
-      canvas.on('mousewheel', handleScroll, false);
+      canvas.addEventListener('DOMMouseScroll', handleScroll, false);
+      canvas.addEventListener('mousewheel', handleScroll, false);
     };
 
     var handleScroll = function(evt) {
