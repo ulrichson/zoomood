@@ -2,18 +2,24 @@ module.exports = function(server) {
   var io = require('socket.io')(server);
 
   io.on('connection', function(socket){
-    console.log('client connected');
+    console.log('Client connected');
 
-    socket.on('lol', function() {
-      console.log('recieved looool');
-    })
+    socket.on('disconnect', function(){
+      console.log('Client disconnected');
+    });
+    
+    // socket.on('lol', function() {
+    //   console.log('recieved looool');
+    // })
 
-    socket.on('update media', function(data) {
-      console.log('a client update media', data);
+    // socket.on('update media', function(data) {
+    //   console.log('a client update media', data);
 
-      io.emit('update media', data);
-    })
+    //   io.emit('update media', data);
+    // })
   });
+
+  return io;
 }
 
 // var sio = require('socket.io');

@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
     uuid = require('node-uuid')
     fs = require('fs');
 
-module.exports = function(config) {
+module.exports = function(config, io) {
   return {
     home: function(req, res) {
       Media.find({}, function(err, docs) {
@@ -113,7 +113,6 @@ module.exports = function(config) {
             msg: msg
           });
         } else {
-          msg = 'Image upload successful: ' + fileName;
           new Media({
             name: fileName,
             // originalName: fileInfo.originalName,
@@ -126,12 +125,25 @@ module.exports = function(config) {
             angle: 0,
             x: 300,
             y: 300,
-          }).save();
+          }).save(function(error, data) {
+            if (error) {
+              msg = 'Image upload failed'
+              console.log(msg + ' (' + error + ')');
+              res.json({
+                error: true,
+                msg: msg
+              });
+            } else {
+              msg = 'Image upload successful: ' + fileName;
+              console.log(msg);
+              res.json({
+                error: false,
+                msg: msg
+              });
 
-          console.log(msg);
-          res.json({
-            error: false,
-            msg: msg
+              // Notify client(s) that new media was uploaded
+              io.emit('media uploaded', data);
+            }
           });
         }        
       });

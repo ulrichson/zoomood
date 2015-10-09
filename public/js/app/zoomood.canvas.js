@@ -1,14 +1,14 @@
 define([
     'jquery',
-    // 'socketio',
+    'socketio',
     'fabric',
     'jquery.fileupload',
     'jquery.ui.widget',
     'bootstrap'
-//  ], function($, io, fabric) {
+], function($, io, fabric) {
 //  var fabricCanvas,
 //      socket = io.connect('http://localhost');
-    ], function($, fabric) {
+//    ], function($, fabric) {
 
   $(function() {
 
@@ -26,6 +26,15 @@ define([
     var selectionEnabled = true;
 
     var splashScreen = $('.splash-screen');
+
+    /*******************************
+     * Socket.io handles
+     *******************************/
+    var socket = io();
+    socket.on('media uploaded', function(data) {
+      console.log('canvas reload due media upload');
+      ajaxGetMedia(data.name);
+    });
 
     /*******************************
      * AJAX calls
@@ -97,7 +106,7 @@ define([
         // console.log('data.length=' + data.length);
         if (data.length) {
           $.each(data, function(key, value) {
-            console.log('media loaded (' + key + '): ' + value.name);
+            console.log('media loaded: ' + value.name);
             fabric.Image.fromURL(value.url, function(img) {
               addZoomoodImage(img, value);
               if (key == data.length - 1) {

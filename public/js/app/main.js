@@ -3,6 +3,6 @@ define([
     './zoomood.canvas'
   ], function($) {
   $(function() {
-    console.log('looool');
+    console.log('Zoomood Whiteboard started');
   })
 });

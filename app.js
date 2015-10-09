@@ -23,19 +23,19 @@ mongoose.connect(config.db);
 // Bootstrap models
 var models_path = __dirname + '/app/models'
 fs.readdirSync(models_path).forEach(function (file) {
-  if (~file.indexOf('.js')) require(models_path + '/' + file)
-})
-
-// Config
-require('./config/express')(app, config);
-require('./config/upload')(app, config);
-require('./config/routes')(app, config);
+  if (~file.indexOf('.js')) require(models_path + '/' + file);
+});
 
 // Server
 var server = http.createServer(app);
 
 // Socket.io
-// require('./config/socket')(server);
+var io = require('./config/socket')(server);
+
+// Config
+require('./config/express')(app, config);
+require('./config/upload')(app, config);
+require('./config/routes')(app, config, io);
 
 // Start server
 server.listen(app.get('port'), function() {
