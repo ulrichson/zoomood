@@ -61,20 +61,33 @@ module.exports = function(config, io) {
     },
 
     deleteOne: function(req, res) {
-      Media.remove({
-        name: req.params.name
-      }, function(err) {
-        res.format({
-          html: function() {
-            res.redirect('/');
-          },
-          json: function() {
-            res.json(err)
-          },
-          text: function() {
-            res.send(err);
-          }
-        });
+      var fileToDelete = config.media + req.params.name;
+      fs.unlink(fileToDelete, function(err) {
+        if (err) {
+          console.error('Media delete from filesystem failed for "' + req.params.name + '"" (' + err + ')');
+          res.json({
+            error: true,
+            msg: 'Media delete failed for ' + req.params.name
+          });
+        } else {
+          Media.remove({
+            name: req.params.name
+          }, function(err) {
+            if (err) {
+              console.error('Media delete from datebase failed for "' + req.params.name + '"" (' + err + ')');
+              res.json({
+                error: true,
+                msg: 'Media delete failed for "' + req.params.name + '"'
+              });
+            } else {
+              console.info('Media "' + req.params.name + '" deleted')
+              res.json({
+                error: false,
+                msg: 'Media "' + req.params.name + '" deleted'
+              });
+            }
+          });
+        }
       });
     },
 
@@ -106,7 +119,7 @@ module.exports = function(config, io) {
       var fileName = uuid.v4() + '.jpg';
       fs.writeFile(config.media + fileName, req.body.image_base64, 'base64', function(err) {
         if (err)  {
-          msg = 'Image upload failed'
+          msg = 'Media upload failed'
           console.log(msg + ' (' + err + ')');
           res.json({
             error: true,
@@ -127,14 +140,14 @@ module.exports = function(config, io) {
             y: 300,
           }).save(function(error, data) {
             if (error) {
-              msg = 'Image upload failed'
+              msg = 'Media upload failed'
               console.log(msg + ' (' + error + ')');
               res.json({
                 error: true,
                 msg: msg
               });
             } else {
-              msg = 'Image upload successful: ' + fileName;
+              msg = 'Media "' + fileName + '" uploaded';
               console.log(msg);
               res.json({
                 error: false,
