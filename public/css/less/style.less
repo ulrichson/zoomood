@@ -1,9 +1,9 @@
 // Libs
-@import "//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css";
+// @import "//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css";
 @import "//fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,800";
 @import "//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css";
 @import (less) "../../lib/bootstrap/dist/css/bootstrap.min.css";
-@import (less) "../../lib/jquery-file-upload/css/jquery.fileupload-ui.css";
+// @import (less) "../../lib/jquery-file-upload/css/jquery.fileupload-ui.css";
 
 // Vars
 @import "globals/variables";
@@ -24,11 +24,23 @@
 .top-toolbar {
   height: 55px;
   background-color: transparent;
-  z-index: 1000000;
+  z-index: 9999;
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
+  padding: 10px 10px 10px 5px;
+
+}
+
+.bottom-toolbar {
+  height: 55px;
+  background-color: transparent;
+  z-index: 9999;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding: 10px 10px 10px 5px;
 
 }

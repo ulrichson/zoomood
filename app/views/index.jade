@@ -1,36 +1,21 @@
 extends layout
 
 block content
-  div.top-toolbar
-    //- .btn.fa.fa-bars.btn-main-menu
-    .main-menu
-      //- form#fileupload(action="/upload", method="POST", enctype="multipart/form-data")
-      //-   .btn.btn-add-media
-      //-   | Add item
-      //-   i.fa.fa-plus
-      //-   input(type="file", name="files[]", multiple)
-      .btn.btn-reset-view
-        | View all
-        i.fa.fa-arrows
-      //- .btn.btn-delete-all
-    .btn.pull-right.btn-share-board
-      | share
-      i.fa.fa-share-square-o
-      //- a.btn-reset-view.btn
-      //-   i.fa.fa-refresh
-      //-   span &nbsp;View all
-      //- a.btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
-      //-   i.fa.fa-trash-o
-      //-   span &nbsp;Delete all
-
   div#canvas-wrapper.canvas-wrapper
-    div.dropzone
-    //- div.canvas.span12.zoomContainer
-    //-   each m in media
-    //-     div.mediaContainer(data-name="#{m.name}", data-scale="#{m.scale}", data-x="#{m.x}", data-y="#{m.y}")
-    //-       button.close &times;
-    //-       img.img-rounded(src="#{m.url}", alt="#{m.name}")
+    //- div.dropzone
     canvas.canvas#canvas
+
+  div.bottom-toolbar
+    .main-menu
+      button#btn-reset-view.btn.btn-reset-view
+        | Fit items to screen
+        i.fa.fa-arrows-alt
+        //- .btn.pull-right.btn-share-board
+        //-  | share
+        //-  i.fa.fa-share-square-o
+        //- a.btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
+        //-   i.fa.fa-trash-o
+        //-   span &nbsp;Delete all
 
   //- Modals
   div#modal-upload.modal-upload.modal.hide.fade(role="dialog")
