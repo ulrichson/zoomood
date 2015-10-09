@@ -7,6 +7,11 @@ A virtual mood board that allows you to organize media on a zoomable canvas.
 npm install
 ```
 
+## Build
+
+- `gulp build` to convert less files into css
+- `bower install` when bower packages for the front-end code changed or are non-existent
+
 ## Run
 ```
 node app.js
