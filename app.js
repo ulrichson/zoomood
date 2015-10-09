@@ -30,12 +30,12 @@ fs.readdirSync(models_path).forEach(function (file) {
 var server = http.createServer(app);
 
 // Socket.io
-var io = require('./config/socket')(server);
+var io = require('./app/socket')(server);
 
 // Config
-require('./config/express')(app, config);
-require('./config/upload')(app, config);
-require('./config/routes')(app, config, io);
+require('./app/express')(app, config);
+require('./app/upload')(app, config);
+require('./app/routes')(app, config, io);
 
 // Start server
 server.listen(app.get('port'), function() {

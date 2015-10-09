@@ -1,6 +1,6 @@
 module.exports = function(app, config, io) {
 
-  var media = require('../app/controllers/media')(config, io);
+  var media = require('./controllers/media')(config, io);
 
   // GET index
   app.get('/', media.home);
