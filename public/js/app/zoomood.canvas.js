@@ -507,22 +507,30 @@ define([
           break;
       }
     }).keydown(function(evt) {
+      var deleteMedia = function() {
+        if (fabricCanvas.getActiveGroup()) {
+          fabricCanvas.getActiveGroup().forEachObject(function(obj) {
+            ajaxDeleteMedia(obj);
+          });
+          fabricCanvas.discardActiveGroup().renderAll();
+        } else {
+          ajaxDeleteMedia(fabricCanvas.getActiveObject());
+        }
+      };
       switch (evt.keyCode) {
-        case 32:
-          // SPACE
+        case 32: // SPACE
           spacePressed = true;
           setSelection(false);
           break;
-        case 88:
-          // 'x'
-          if (fabricCanvas.getActiveGroup()) {
-            fabricCanvas.getActiveGroup().forEachObject(function(obj) {
-              ajaxDeleteMedia(obj);
-            });
-            fabricCanvas.discardActiveGroup().renderAll();
-          } else {
-            ajaxDeleteMedia(fabricCanvas.getActiveObject());
-          }
+        case 88: // 'x'
+          deleteMedia();
+          break;
+        case 8: // BACKSPACE
+          deleteMedia();
+          break;
+
+        case 46: // DELETE
+          deleteMedia();
           break;
       }
     });
