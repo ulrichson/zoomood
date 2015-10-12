@@ -39,6 +39,17 @@ define([
     /*******************************
      * AJAX calls
      *******************************/
+    var findObjectInCanvas = function(name) {
+      // TODO: build index for names to optimize performance
+      var objects = fabricCanvas.toJSON().objects;
+      for (i in objects) {
+        console.log(objects[i]);
+        if (objects[i].src.indexOf(name) > -1)
+          return objects[i];
+      }
+      return null;
+    }
+
     var ajaxSaveCanvas = function() {
       // update all media
       var objects = fabricCanvas.getObjects();
@@ -68,30 +79,31 @@ define([
 
       // save data
       for (var i = 0; i < arr.length; i++) {
-        var xPos = isGroup ? (arr[i].oCoords.tl.x + arr[i].group.width / 2 + arr[i].group.left) : arr[i].oCoords.tl.x;
-        var yPos = isGroup ? (arr[i].oCoords.tl.y + arr[i].group.height / 2 + arr[i].group.top) : arr[i].oCoords.tl.y;
-
-        $.ajax({
-          url: '/media/' + arr[i].name,
-          type: 'PUT',
-          accepts: {
-            json: 'application/json'
-          },
-          contentType: 'application/json',
-          data: JSON.stringify({
-            scale: arr[i].scaleX,
-            angle: arr[i].angle,
-            x: xPos,
-            y: yPos 
-          }),
-          beforeSend: function(xhr) {
-            // WORKAROUND. For any reason the 'accepts' fields isn't applied
-            xhr.setRequestHeader('Accept', 'application/json');
-          },
-          success: function(data, textStatus, jqXHR) {
-            console.log('media updated');
-          }
-        });
+        var name = arr[i].name
+        var obj = findObjectInCanvas(name);
+        if (obj != null) {
+          $.ajax({
+            url: '/media/' + name,
+            type: 'PUT',
+            accepts: {
+              json: 'application/json'
+            },
+            contentType: 'application/json',
+            data: JSON.stringify({
+              scale: obj.scaleX,
+              angle: obj.angle,
+              x: obj.left,
+              y: obj.top
+            }),
+            beforeSend: function(xhr) {
+              // WORKAROUND. For any reason the 'accepts' fields isn't applied
+              xhr.setRequestHeader('Accept', 'application/json');
+            },
+            success: function(data, textStatus, jqXHR) {
+              console.log('media updated: ' + name);
+            }
+          });
+        }
       }
     };
 
@@ -117,7 +129,6 @@ define([
       animate = typeof animate !== 'undefined' ? animate : false;
       name = name || '';
       $.getJSON('/media/' + name, function(data) {
-        // console.log('data.length=' + data.length);
         if (data.length) {
           $.each(data, function(key, value) {
             console.log('media loaded: ' + value.name);
