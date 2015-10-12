@@ -66,10 +66,10 @@ define([
         },
         contentType: 'application/json',
         data: JSON.stringify({
-          scale: media.get('scaleX'),
-          angle: media.get('angle'),
-          x: media.get('left'),
-          y: media.get('top')
+          scale: media.scaleX,
+          angle: media.angle,
+          x: media.oCoords.tl.x,
+          y: media.oCoords.tl.y 
         }),
         beforeSend: function(xhr) {
           // WORKAROUND. For any reason the 'accepts' fields isn't applied
@@ -153,7 +153,8 @@ define([
         top: data.y,
         lockUniScaling: true,
         name: data.name,
-        delete_url: data.delete_url
+        centeredRotation: true,
+        centeredScaling: true
       }).scale(data.scale).setShadow({
         color: 'rgba(0, 0, 0, 0.2)',
         blur: 10,
