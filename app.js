@@ -3,217 +3,46 @@
  */
 
 var express = require('express'),
-    http = require('http'),
-    upload = require('jquery-file-upload-middleware'),
     mongoose = require('mongoose'),
-    path = require('path'),
-    uuid = require('node-uuid');
-
-var app = express();
-
+    // newrelic = require('newrelic'),
+    env = process.env.NODE_ENV || 'development',
+    fs = require('fs'),
+    http = require('http'),
+    config = require('./config/config')[env];
 
 /**
- * Configuration
+ * Main app.
  */
-
-// Upload middleware
-upload.configure({
-    uploadDir: __dirname + '/public/uploads',
-    uploadUrl: '/uploads',
-    imageVersions: {
-        thumbnail: {
-            width: 80,
-            height: 80
-        }
-    }
-});
 
 // App
-app.configure(function() {
-    app.set('port', process.env.PORT || 3000);
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-    // app.use(express.favicon());
-    // app.use(express.logger('dev'));
-    app.use('/upload', upload.fileHandler());
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    // app.use(express.cookieParser('your secret here'));
-    // app.use(express.session());
-    app.use(app.router);
-    app.use(require('less-middleware')({
-        src: __dirname + '/public'
-    }));
-    app.use(express.static(path.join(__dirname, 'public')));
+var app = express();
+
+// DB
+mongoose.connect(config.db);
+
+// Bootstrap models
+var models_path = __dirname + '/app/models'
+fs.readdirSync(models_path).forEach(function (file) {
+  if (~file.indexOf('.js')) require(models_path + '/' + file);
 });
 
-app.configure('development', function() {
-    app.use(express.errorHandler());
-});
+// Server
+var server = http.createServer(app);
 
-// Mongodb
-mongoose.connect('localhost', 'zoomood');
+// Socket.io
+var io = require('./app/socket')(server);
 
-var MediaSchema = mongoose.Schema({
-    name: String,
-    originalName: String,
-    size: Number,
-    type: String,
-    delete_url: String,
-    url: String,
-    thumbnail_url: String,
-    scale: Number,
-    angle: Number,
-    x: Number,
-    y: Number,
-});
+// Config
+require('./app/express')(app, config);
+require('./app/upload')(app, config);
+require('./app/routes')(app, config, io);
 
-var Media = mongoose.model('Media', MediaSchema);
+// Create files directory if not exists
+if (!fs.existsSync(config.media)){
+	fs.mkdirSync(config.media);
+}
 
-upload.on('begin', function(fileInfo) {
-    var ext = fileInfo.name.substr(fileInfo.name.lastIndexOf('.') + 1);
-    fileInfo.name = uuid.v4() + '.' + ext;
-});
-
-upload.on('end', function(fileInfo) {
-    new Media({
-        name: fileInfo.name,
-        originalName: fileInfo.originalName,
-        size: fileInfo.size,
-        type: fileInfo.type,
-        delete_url: fileInfo.delete_url,
-        url: fileInfo.url,
-        thumbnail_url: fileInfo.thumbnail_url,
-        scale: 0.2,
-        angle: 0,
-        x: 300,
-        y: 300,
-    }).save();
-    console.log('File uploaded: ' + fileInfo.name);
-});
-
-upload.on('delete', function(fileName) {
-    Media.remove({
-        name: fileName
-    }, function(err) {
-        console.log('File deleted: ' + fileName);
-    });
-});
-
-upload.on('error', function(e) {
-    console.log(e.message);
-});
-
-/**
- * Routes.
- */
-
-// GET index
-app.get('/', function(req, res) {
-    var media = Media.find({}, function(err, docs) {
-        res.render('index', {
-            media: docs,
-            title: 'Welcome to zoomood!'
-        });
-    });
-});
-
-// GET all media
-app.get('/media', function(req, res) {
-    var media = Media.find({}, function(err, docs) {
-        res.format({
-            html: function() {
-                res.render('media', {
-                    media: docs,
-                    title: 'Media'
-                });
-            },
-            json: function() {
-                res.json(docs);
-            },
-            text: function() {
-                res.send('');
-            }
-        });
-    });
-});
-
-// GET media
-app.get('/media/:name', function(req, res) {
-    var media = Media.find({
-        name: req.params.name
-    }, function(err, docs) {
-        res.format({
-            html: function() {
-                res.render('media', {
-                    media: docs,
-                    title: 'Media'
-                });
-            },
-            json: function() {
-                res.json(docs[0]);
-            },
-            text: function() {
-                res.send('');
-            }
-        });
-    })
-});
-
-// DELETE all media
-app.delete('/media/all', function(req, res) {
-    Media.remove({}, function(err) {
-        res.redirect('/');
-    });
-});
-
-// DELETE media
-app.delete('/media/:name', function(req, res) {
-    Media.remove({
-        name: req.params.name
-    }, function(err) {
-        res.format({
-            html: function() {
-                res.redirect('/');
-            },
-            json: function() {
-                res.json(err)
-            },
-            text: function() {
-                res.send(err);
-            }
-        });
-    });
-});
-
-// UPDATE media
-app.put('/media/:name', function(req, res) {
-    var b = req.body;
-    Media.update({
-        name: req.params.name
-    }, {
-        scale: b.scale,
-        angle: b.angle,
-        x: b.x,
-        y: b.y
-    }, function(err) {
-        res.format({
-            html: function() {
-                res.send(err);
-            },
-            json: function() {
-                res.json(err)
-            },
-            text: function() {
-                res.send(err);
-            }
-        });
-    });
-});
-
-/**
- * Server.
- */
-http.createServer(app).listen(app.get('port'), function() {
-    console.log("Express server listening on port " + app.get('port'));
+// Start server
+server.listen(app.get('port'), function() {
+  console.log("Express server listening on port " + app.get('port'));
 });

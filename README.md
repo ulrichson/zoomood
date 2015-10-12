@@ -1,10 +1,35 @@
 # zoomood
 
-A virtual mood board that allows you to drag&drop media to a canvas an zoom into that.
+A virtual mood board that allows you to organize media on a zoomable canvas.
+
+## Setup
+```
+npm install
+```
+
+## Build
+
+- `gulp build` to convert less files into css
+- `bower install` when bower packages for the front-end code changed or are non-existent
 
 ## Run
-`npm start`
+
+```
+node app.js
+```
+
+Furthermore, MongoDB must be running.
+
+## Debugging
+
+Install debugger with `npm install -g node-inspector` and run `node-debug app.js`.
+
+## Test
+
+`(echo -n '{"image_base64": "'; base64 ~/Desktop/test.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @- localhost:3000/media`
 
 ## Requirements
+
 - node.js
 - MongoDB
+
