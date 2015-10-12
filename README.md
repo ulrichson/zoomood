@@ -13,19 +13,23 @@ npm install
 - `bower install` when bower packages for the front-end code changed or are non-existent
 
 ## Run
+
 ```
 node app.js
 ```
 
 Furthermore, MongoDB must be running.
 
+## Debugging
+
+Install debugger with `npm install -g node-inspector` and run `node-debug app.js`.
+
 ## Test
 
 `(echo -n '{"image_base64": "'; base64 ~/Desktop/test.jpg; echo '"}') | curl -H "Content-Type: application/json" -d @- localhost:3000/media`
 
 ## Requirements
+
 - node.js
 - MongoDB
-
-## Roadmap
 
