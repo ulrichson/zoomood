@@ -24,6 +24,7 @@ define([
     var scaleFactor = 1.1;
     var spacePressed = false;
     var selectionEnabled = true;
+    var canvasObjectsIndex = new Array();
 
     var splashScreen = $('.splash-screen');
 
@@ -39,17 +40,6 @@ define([
     /*******************************
      * AJAX calls
      *******************************/
-    var findObjectInCanvas = function(name) {
-      // TODO: build index for names to optimize performance
-      var objects = fabricCanvas.toJSON().objects;
-      for (i in objects) {
-        console.log(objects[i]);
-        if (objects[i].src.indexOf(name) > -1)
-          return objects[i];
-      }
-      return null;
-    }
-
     var ajaxSaveCanvas = function() {
       // update all media
       var objects = fabricCanvas.getObjects();
@@ -79,8 +69,8 @@ define([
 
       // save data
       for (var i = 0; i < arr.length; i++) {
-        var name = arr[i].name
-        var obj = findObjectInCanvas(name);
+        var name = arr[i].name;
+        var obj = fabricCanvas.toJSON().objects[canvasObjectsIndex[name]];
         if (obj != null) {
           $.ajax({
             url: '/media/' + name,
@@ -126,8 +116,9 @@ define([
     };
 
     var ajaxGetMedia = function(name, animate) {
-      animate = typeof animate !== 'undefined' ? animate : false;
+      animate = animate || false;
       name = name || '';
+
       $.getJSON('/media/' + name, function(data) {
         if (data.length) {
           $.each(data, function(key, value) {
@@ -195,6 +186,15 @@ define([
         fabricCanvas = new fabric.Canvas('canvas');
         fabricCanvas.on('object:modified', function(options) {
           ajaxUpdateMedia(options.target);
+        });
+
+        fabricCanvas.on('object:added', function(obj) {
+          // add last added  to index
+          canvasObjectsIndex[obj.target.name] = fabricCanvas.toJSON().objects.length - 1;
+        });
+
+        fabricCanvas.on('object:removed', function(obj) {;
+          delete canvasObjectsIndex[obj.target.name]
         });
       }
 
@@ -578,7 +578,7 @@ define([
      * Code
      *******************************/
     initCanvas();
-    initFileUpload();
+    // initFileUpload();
     ajaxGetMedia();
     // showCanvasBoundingRect(true);
   });
