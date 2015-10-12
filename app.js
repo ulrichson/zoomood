@@ -37,6 +37,11 @@ require('./app/express')(app, config);
 require('./app/upload')(app, config);
 require('./app/routes')(app, config, io);
 
+// Create files directory if not exists
+if (!fs.existsSync(config.media)){
+	fs.mkdirSync(config.media);
+}
+
 // Start server
 server.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
