@@ -372,6 +372,7 @@ define([
     };
 
     var resetView = function() {
+      fabricCanvas.deactivateAllWithDispatch();
       var bound = calculateCanvasBound();
 
       var vw = fabricCanvas.getWidth();
