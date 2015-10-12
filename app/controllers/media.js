@@ -1,7 +1,9 @@
 var mongoose = require('mongoose'),
     Media = mongoose.model('Media'),
     uuid = require('node-uuid')
-    fs = require('fs');
+    fs = require('fs'),
+    fileType = require('file-type'),
+    require('buffer');
 
 module.exports = function(config, io) {
   return {
@@ -116,49 +118,63 @@ module.exports = function(config, io) {
     },
 
     post: function(req, res) {
-      var fileName = uuid.v4() + '.jpg';
-      fs.writeFile(config.media + fileName, req.body.image_base64, 'base64', function(err) {
-        if (err)  {
+      // Check required fields
+      if (!req.body.image_base64) {
+        return res.json({
+          error: true,
+          msg: 'field image_base64 is missing'
+        });
+      }
+
+      // Check file type
+      var fb = new Buffer(req.body.image_base64, 'base64');
+      var ft = fileType(fb);
+
+      if (ft.mime != 'image/jpeg' && ft != 'image/png') {
+        return res.json({
+          error: true,
+          msg: 'file type not supported (needs to be image/jpeg or image/png)'
+        });
+      } 
+
+      // Save media
+      var fn = uuid.v4() + '.' + ft.ext;
+      fs.writeFile(config.media + fn, fb, function(err) {
+        if (err) {
           msg = 'Media upload failed'
           console.log(msg + ' (' + err + ')');
-          res.json({
+          return res.json({
             error: true,
             msg: msg
           });
-        } else {
-          new Media({
-            name: fileName,
-            // originalName: fileInfo.originalName,
-            // size: fileInfo.size,
-            // type: fileInfo.type,
-            // delete_url: fileInfo.delete_url,
-            url: '/files/' + fileName,
-            // thumbnail_url: fileInfo.thumbnail_url,
-            scale: 0.2,
-            angle: 0,
-            x: 300,
-            y: 300,
-          }).save(function(error, data) {
-            if (error) {
-              msg = 'Media upload failed'
-              console.log(msg + ' (' + error + ')');
-              res.json({
-                error: true,
-                msg: msg
-              });
-            } else {
-              msg = 'Media "' + fileName + '" uploaded';
-              console.log(msg);
-              res.json({
-                error: false,
-                msg: msg
-              });
+        }
+        new Media({
+          name: fn,
+          url: '/files/' + fn,
+          scale: 0.2,
+          angle: 0,
+          x: 300,
+          y: 300,
+        }).save(function(err, data) {
+          if (err) {
+            msg = 'Media upload failed'
+            console.log(msg + ' (' + err + ')');
+            return res.json({
+              error: true,
+              msg: msg
+            });
+          }
 
-              // Notify client(s) that new media was uploaded
-              io.emit('media uploaded', data);
-            }
+          msg = 'Media "' + fn + '" uploaded';
+          console.log(msg);
+          res.json({
+            error: false,
+            msg: msg
           });
-        }        
+
+          // Notify client(s) that new media was uploaded
+          io.emit('media uploaded', data);
+        });
       });
     }
   }
