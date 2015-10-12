@@ -151,12 +151,10 @@ module.exports = function(config, io) {
 
       var longerEdge = Math.max(scaleWidth, scaledHeight);
       if (scaleWidth > scaledHeight) {
-        offsetY = (longerEdge - scaledHeight) / 2;
+        offsetY = Math.round((longerEdge - scaledHeight) / 2);
       } else {
-        offsetX = (longerEdge - scaleWidth) / 2;
+        offsetX = Math.round((longerEdge - scaleWidth) / 2);
       }
-
-      console.log("x: " + offsetX + " y: " + offsetY);
 
       fs.writeFile(config.media + fn, fb, function(err) {
         if (err) {
