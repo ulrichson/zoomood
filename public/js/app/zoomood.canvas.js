@@ -57,28 +57,42 @@ define([
         y: media.get('top')
       });*/
 
+      var arr = [];
+      var isGroup = false;
+      if (media._objects) {
+        arr = media._objects; 
+        isGroup = true;
+      } else {
+        arr.push(media);
+      }
+
       // save data
-      $.ajax({
-        url: '/media/' + media.name,
-        type: 'PUT',
-        accepts: {
-          json: 'application/json'
-        },
-        contentType: 'application/json',
-        data: JSON.stringify({
-          scale: media.scaleX,
-          angle: media.angle,
-          x: media.oCoords.tl.x,
-          y: media.oCoords.tl.y 
-        }),
-        beforeSend: function(xhr) {
-          // WORKAROUND. For any reason the 'accepts' fields isn't applied
-          xhr.setRequestHeader('Accept', 'application/json');
-        },
-        success: function(data, textStatus, jqXHR) {
-          console.log('media updated: "' + media.name);
-        }
-      });
+      for (var i = 0; i < arr.length; i++) {
+        var xPos = isGroup ? (arr[i].oCoords.tl.x + arr[i].group.width / 2 + arr[i].group.left) : arr[i].oCoords.tl.x;
+        var yPos = isGroup ? (arr[i].oCoords.tl.y + arr[i].group.height / 2 + arr[i].group.top) : arr[i].oCoords.tl.y;
+
+        $.ajax({
+          url: '/media/' + arr[i].name,
+          type: 'PUT',
+          accepts: {
+            json: 'application/json'
+          },
+          contentType: 'application/json',
+          data: JSON.stringify({
+            scale: arr[i].scaleX,
+            angle: arr[i].angle,
+            x: xPos,
+            y: yPos 
+          }),
+          beforeSend: function(xhr) {
+            // WORKAROUND. For any reason the 'accepts' fields isn't applied
+            xhr.setRequestHeader('Accept', 'application/json');
+          },
+          success: function(data, textStatus, jqXHR) {
+            console.log('media updated');
+          }
+        });
+      }
     };
 
     var ajaxDeleteMedia = function(media) {
