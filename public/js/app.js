@@ -11,7 +11,7 @@ requirejs.config({
     },
     paths: {
       app: 'js/app',
-      jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min',
+      jquery: 'lib/jquery/dist/jquery.min',
       bootstrap: 'lib/bootstrap/dist/js/bootstrap.min',
       socketio: '/socket.io/socket.io',
       fabric: 'lib/fabric/dist/fabric.require',
