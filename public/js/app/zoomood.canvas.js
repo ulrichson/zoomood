@@ -32,8 +32,8 @@ define([
      *******************************/
     var socket = io();
     socket.on('media uploaded', function(data) {
-      console.log('canvas reload due media upload');
-      ajaxGetMedia(data.name);
+      console.log('media was uploaded');
+      ajaxGetMedia(data.name, true);
     });
 
     /*******************************
@@ -99,7 +99,8 @@ define([
       });
     };
 
-    var ajaxGetMedia = function(name) {
+    var ajaxGetMedia = function(name, animate) {
+      animate = typeof animate !== 'undefined' ? animate : false;
       name = name || '';
       $.getJSON('/media/' + name, function(data) {
         // console.log('data.length=' + data.length);
@@ -107,7 +108,7 @@ define([
           $.each(data, function(key, value) {
             console.log('media loaded: ' + value.name);
             fabric.Image.fromURL(value.url, function(img) {
-              addZoomoodImage(img, value);
+              addZoomoodImage(img, value, animate);
               if (key == data.length - 1) {
                 hideSplashScreen();
               }
@@ -117,7 +118,7 @@ define([
           if (!$.isEmptyObject(data)) {
             console.log('media loaded: ' + data.name);
             fabric.Image.fromURL(data.url, function(img) {
-              addZoomoodImage(img, data);
+              addZoomoodImage(img, data, animate);
             });
           } else {
             hideSplashScreen();
@@ -126,15 +127,19 @@ define([
       });
     };
 
-    var addZoomoodImage = function(img, data) {
+    var addZoomoodImage = function(img, data, animate) {
+      animate = typeof animate !== 'undefined' ? animate : false;
+
+      var animateFromY = canvas.height + 400;
+      var animateToY = data.y;
+
       img.set({
         angle: data.angle,
         left: data.x,
-        top: data.y,
+        top: animate ? animateFromY : data.y,
         lockUniScaling: true,
         name: data.name,
-        centeredRotation: true,
-        centeredScaling: true
+        centeredRotation: true
       }).scale(data.scale).setShadow({
         color: 'rgba(0, 0, 0, 0.2)',
         blur: 10,
@@ -142,7 +147,16 @@ define([
         offsetY: 0
       });
 
-      fabricCanvas.add(img)
+      fabricCanvas.add(img);
+
+      if (animate) {
+        // Animate appearance
+        img.animate('top', animateToY, {
+          duration: 700,
+          onChange: fabricCanvas.renderAll.bind(fabricCanvas),
+          easing: fabric.util.ease.easeOutBounce
+        });
+      }
     };
 
     /*******************************
