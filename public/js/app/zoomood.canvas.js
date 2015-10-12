@@ -127,26 +127,6 @@ define([
     };
 
     var addZoomoodImage = function(img, data) {
-      // var radius = 15;
-      // var x = -img.width / 2;
-      // var y = -img.height / 2;
-      // img.clipTo = function(ctx) {
-      //  // start at left top
-      //  ctx.moveTo(x + radius, y);
-      //  // right top
-      //  ctx.lineTo(x + img.width - radius, y);
-      //  ctx.quadraticCurveTo(x + img.width, y, x + img.width, y + radius);
-      //  // right bottom
-      //  ctx.lineTo(x + img.width, y + img.height - radius);
-      //  ctx.quadraticCurveTo(x + img.width, y + img.height, x + img.width - radius, y + img.height);
-      //  // left bottom
-      //  ctx.lineTo(x + radius, y + img.height);
-      //  ctx.quadraticCurveTo(x, y + img.height, x, y + img.height - radius);
-      //  // back to left top
-      //  ctx.lineTo(x, y + radius);
-      //  ctx.quadraticCurveTo(x, y, x + radius, y);
-      // };
-
       img.set({
         angle: data.angle,
         left: data.x,
