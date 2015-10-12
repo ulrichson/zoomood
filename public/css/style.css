@@ -5928,6 +5928,16 @@ body {
   overflow: hidden;
   width: auto;
 }
+.media-dropzone {
+  background-color: rgba(0, 80, 120, 0.4);
+  border-radius: 15px;
+  height: 190px;
+  left: -20px;
+  position: absolute;
+  top: -20px;
+  width: 190px;
+  z-index: -1;
+}
 /*****************************
 * File upload
 *****************************/

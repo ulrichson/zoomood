@@ -3,7 +3,8 @@ var mongoose = require('mongoose'),
     uuid = require('node-uuid')
     fs = require('fs'),
     fileType = require('file-type'),
-    require('buffer');
+    require('buffer'),
+    sizeOf = require('image-size');
 
 module.exports = function(config, io) {
   return {
@@ -129,16 +130,34 @@ module.exports = function(config, io) {
       // Check file type
       var fb = new Buffer(req.body.image_base64, 'base64');
       var ft = fileType(fb);
+      var size = sizeOf(fb);
 
       if (ft.mime != 'image/jpeg' && ft != 'image/png') {
         return res.json({
           error: true,
           msg: 'file type not supported (needs to be image/jpeg or image/png)'
         });
-      } 
+      }
 
       // Save media
       var fn = uuid.v4() + '.' + ft.ext;
+      var s = Math.min(config.canvas.initMaxSize.w / size.width, config.canvas.initMaxSize.h / size.height);
+      
+      // Center image
+      var scaleWidth = size.width * s;
+      var scaledHeight = size.height * s;
+      var offsetX = 0;
+      var offsetY = 0;
+
+      var longerEdge = Math.max(scaleWidth, scaledHeight);
+      if (scaleWidth > scaledHeight) {
+        offsetY = (longerEdge - scaledHeight) / 2;
+      } else {
+        offsetX = (longerEdge - scaleWidth) / 2;
+      }
+
+      console.log("x: " + offsetX + " y: " + offsetY);
+
       fs.writeFile(config.media + fn, fb, function(err) {
         if (err) {
           msg = 'Media upload failed'
@@ -151,10 +170,10 @@ module.exports = function(config, io) {
         new Media({
           name: fn,
           url: '/files/' + fn,
-          scale: 0.2,
+          scale: s,
           angle: 0,
-          x: 300,
-          y: 300,
+          x: config.canvas.initPosition.x + offsetX,
+          y: config.canvas.initPosition.y + offsetY,
         }).save(function(err, data) {
           if (err) {
             msg = 'Media upload failed'
