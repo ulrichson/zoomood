@@ -199,7 +199,25 @@ define([
 
         fabricCanvas.on('path:created', function(obj) {
           // free-drawing
-          console.log(obj);
+
+          /*
+          console.log("image:");
+
+          obj.path.setFill("#000000");
+
+          //console.log(obj.path.cloneAsImage().toDataURL());
+
+          obj.path.cloneAsImage(function(image) {
+            //console.log()
+            $("<img>").attr("src", image.toDataURL()).appendTo("body");
+          });
+          */
+          $.post("/media", {
+            image_base64: obj.path.cloneAsImage().toDataURL().replace('data:image/png;base64,',''),
+          },
+          function(data, status) {
+              console.log(data);
+          });
         });
       }
 
