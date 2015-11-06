@@ -132,7 +132,7 @@ module.exports = function(config, io) {
       var ft = fileType(fb);
       var size = sizeOf(fb);
 
-      if (ft.mime != 'image/jpeg' && ft != 'image/png') {
+      if (ft.mime != 'image/jpeg' && ft.mime != 'image/png') {
         return res.json({
           error: true,
           msg: 'file type not supported (needs to be image/jpeg or image/png)'
