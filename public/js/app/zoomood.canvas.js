@@ -196,6 +196,11 @@ define([
         fabricCanvas.on('object:removed', function(obj) {;
           delete canvasObjectsIndex[obj.target.name]
         });
+
+        fabricCanvas.on('path:created', function(obj) {
+          // free-drawing
+          console.log(obj);
+        });
       }
 
       // take index [1] since fabric.js produces an extra canvas (buffer technique?)
@@ -560,6 +565,12 @@ define([
       resetView();
       // showCanvasBoundingRect(true);
       // setSelection(true);
+    });
+
+    $('#btn-switch-draw-mode').click(function() {
+      var btn = $('#btn-switch-draw-mode');
+      btn.toggleClass('active');
+      fabricCanvas.isDrawingMode = btn.hasClass('active');
     });
 
     $(document).bind('dragover', function(e) {
