@@ -587,14 +587,30 @@ define([
       // setSelection(true);
     });
 
+    $('#btn-undo-draw').click(function() {
+      if (fabricCanvas.isDrawingMode) {
+        // remove last added path
+        fabricCanvas.remove(drawnPathObjects[drawnPathObjects.length - 1]);
+        drawnPathObjects.pop();
+      }
+    });
+
     $('#btn-switch-draw-mode').click(function() {
       var btn = $('#btn-switch-draw-mode');
       var isDrawingMode = false;
       btn.toggleClass('active');
       fabricCanvas.isDrawingMode = isDrawingMode = btn.hasClass('active');
+
+      if (isDrawingMode) {
+        $('#btn-switch-draw-mode>span').text('Save drawing');
+        $('#btn-undo-draw').removeClass('hide');
+      } else {
+        $('#btn-switch-draw-mode>span').text('Start drawing');
+        $('#btn-undo-draw').addClass('hide');
+      }
       
       // save when drawing is finished
-      if (!isDrawingMode) {
+      if (!isDrawingMode && drawnPathObjects.length > 0) {
         var objects = fabricCanvas.getObjects();
         var objectsToGroup = new Array();
 
