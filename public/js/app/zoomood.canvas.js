@@ -34,7 +34,8 @@ define([
     var socket = io();
     socket.on('media uploaded', function(data) {
       console.log('media was uploaded');
-      ajaxGetMedia(data.name, true);
+      var animate = data.type && data.type == 'whiteboard' ? false : true;
+      ajaxGetMedia(data.name, animate);
     });
 
     /*******************************
@@ -212,12 +213,8 @@ define([
             $("<img>").attr("src", image.toDataURL()).appendTo("body");
           });
           */
-          $.post("/media", {
-            image_base64: obj.path.cloneAsImage().toDataURL().replace('data:image/png;base64,',''),
-          },
-          function(data, status) {
-              console.log(data);
-          });
+          console.log("free-drawing path created");
+          
         });
       }
 
@@ -587,8 +584,101 @@ define([
 
     $('#btn-switch-draw-mode').click(function() {
       var btn = $('#btn-switch-draw-mode');
+      var isDrawingMode = false;
       btn.toggleClass('active');
-      fabricCanvas.isDrawingMode = btn.hasClass('active');
+      fabricCanvas.isDrawingMode = isDrawingMode = btn.hasClass('active');
+      
+      if (!isDrawingMode) {
+        var objects = fabricCanvas.getObjects();
+        var objectsToGroup = new Array();
+
+        // console.log('objects');
+        // console.log(objects);
+
+        // collect all added elements (path)
+        for (var i = 0; i < objects.length; i++) {
+          if (objects[i].hasOwnProperty('path')) {
+            // create image instance
+            objectsToGroup.push(fabricCanvas.item(i).cloneAsImage());
+            //objectsToGroup.push(objects[i].clone());
+            //fabricCanvas.remove(objects[i]);
+          }
+        }
+        
+        // remove path object from canvas
+        /*for (i in objects) {
+          if (objects[i].hasOwnProperty('path')) {
+            fabricCanvas.remove(objects[i]);
+          }
+        }
+*/
+
+        // group new image objects
+        var group = new fabric.Group(objectsToGroup);
+        fabricCanvas.add(group);
+
+        console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
+        //console.log(group.cloneAsImage().toDataURL());//.replace('data:image/png;base64,',''));
+        group.cloneAsImage(function (img) {
+          // console.log(group);
+          var base64_image = fabricCanvas.toDataURL({
+            format: 'png',
+            left: group.left,
+            top: group.top,
+            width: group.width,
+            height: group.height
+          });
+          // $("<img>").attr("src", base64_image).appendTo("body");
+
+          // save on server
+          $.post('/media', {
+            image_base64: base64_image.replace('data:image/png;base64,',''),
+            scale: 1.0,
+            angle: 0.0,
+            x: group.left,
+            y: group.top,
+            type: 'whiteboard'
+          },
+          function(data, status) {
+            // console.log(data);
+
+            // console.log('objects (before remove)');
+            // console.log(fabricCanvas.getObjects());
+
+            fabricCanvas.remove(group);
+            var objects = fabricCanvas.getObjects();
+            for (i in objects) {
+              if (objects[i].hasOwnProperty('path')) {
+                fabricCanvas.remove(objects[i]);
+                // console.log('removing');
+                // console.log(objects[i]);
+              }
+            }
+
+            /*var objectsToRestore = new Array();
+            var objects = fabricCanvas.getObjects();
+
+            for (i in objects) {
+              if (objects[i].hasOwnProperty('name')) {
+                objectsToRestore.push(objects[i].clone());
+              }
+            }
+
+            console.log('restore: ' + objectsToRestore.length);
+
+            fabricCanvas.clear();
+            for (var i = 0; i < objectsToRestore.length; i++) {
+              console.log(objectsToRestore[i]);
+              fabricCanvas.add(objectsToRestore[i]);
+            }
+            fabricCanvas.renderAll();*/
+            // fabricCanvas.add(objectsToRestore);
+
+            // console.log('objects (after remove)');
+            // console.log(fabricCanvas.getObjects());
+          }); 
+        });
+      }
     });
 
     $(document).bind('dragover', function(e) {

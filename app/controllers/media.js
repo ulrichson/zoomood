@@ -141,7 +141,9 @@ module.exports = function(config, io) {
 
       // Save media
       var fn = uuid.v4() + '.' + ft.ext;
-      var s = Math.min(config.canvas.initMaxSize.w / size.width, config.canvas.initMaxSize.h / size.height);
+      var s = req.body.scale || Math.min(config.canvas.initMaxSize.w / size.width, config.canvas.initMaxSize.h / size.height);
+      var a = req.body.angle || 0.0;
+      var type = req.body.type || "unknown";
       
       // Center image
       var scaleWidth = size.width * s;
@@ -156,6 +158,9 @@ module.exports = function(config, io) {
         offsetX = Math.round((longerEdge - scaleWidth) / 2);
       }
 
+      var x = req.body.x || config.canvas.initPosition.x + offsetX;
+      var y = req.body.y || config.canvas.initPosition.y + offsetY;
+
       fs.writeFile(config.media + fn, fb, function(err) {
         if (err) {
           msg = 'Media upload failed'
@@ -169,9 +174,10 @@ module.exports = function(config, io) {
           name: fn,
           url: '/files/' + fn,
           scale: s,
-          angle: 0,
-          x: config.canvas.initPosition.x + offsetX,
-          y: config.canvas.initPosition.y + offsetY,
+          angle: a,
+          x: x,
+          y: y,
+          type: type
         }).save(function(err, data) {
           if (err) {
             msg = 'Media upload failed'
