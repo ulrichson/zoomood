@@ -614,11 +614,6 @@ define([
           if (objects[i].type == 'image') {
             objects[i].hide();
           } 
-          /*if (objects[i].type != 'group') {
-            console.log('hiding:');
-            console.log(objects[i]);
-            objects[i].hide();
-          }*/
         }
 
         group.cloneAsImage(function (img) {
