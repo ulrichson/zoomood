@@ -16,7 +16,7 @@ define([
      * Variables
      *******************************/
     var canvas;
-    var fabricCanvas
+    var fabricCanvas;
 
     var lastX, lastY;
     var dragStart, dragged;
@@ -27,6 +27,7 @@ define([
     var canvasObjectsIndex = new Array();
 
     var splashScreen = $('.splash-screen');
+    var drawnPathObjects = new Array();
 
     /*******************************
      * Socket.io handles
@@ -34,7 +35,8 @@ define([
     var socket = io();
     socket.on('media uploaded', function(data) {
       console.log('media was uploaded');
-      ajaxGetMedia(data.name, true);
+      var animate = data.type && data.type == 'whiteboard' ? false : true;
+      ajaxGetMedia(data.name, animate);
     });
 
     /*******************************
@@ -184,6 +186,23 @@ define([
 
       if (fabricCanvas == null) {
         fabricCanvas = new fabric.Canvas('canvas');
+
+        // extend fabricjs with show/hide functionality
+        // see https://groups.google.com/d/msg/fabricjs/cbdFgTH7UXc/jj6iVoNYmVUJ
+        fabric.Object.prototype.hide = function() {
+          this.set({
+            opacity: 0,
+            selectable: false
+          });
+        };
+
+        fabric.Object.prototype.show = function() {
+          this.set({
+            opacity: 1,
+            selectable: true
+          });
+        };
+
         fabricCanvas.on('object:modified', function(options) {
           ajaxUpdateMedia(options.target);
         });
@@ -195,6 +214,12 @@ define([
 
         fabricCanvas.on('object:removed', function(obj) {;
           delete canvasObjectsIndex[obj.target.name]
+        });
+
+        fabricCanvas.on('path:created', function(obj) {
+          // free-drawing
+          console.log("free-drawing path created");
+          drawnPathObjects.push(obj.path);
         });
       }
 
@@ -560,6 +585,87 @@ define([
       resetView();
       // showCanvasBoundingRect(true);
       // setSelection(true);
+    });
+
+    $('#btn-undo-draw').click(function() {
+      if (fabricCanvas.isDrawingMode) {
+        // remove last added path
+        fabricCanvas.remove(drawnPathObjects[drawnPathObjects.length - 1]);
+        drawnPathObjects.pop();
+      }
+    });
+
+    $('#btn-switch-draw-mode').click(function() {
+      var btn = $('#btn-switch-draw-mode');
+      var isDrawingMode = false;
+      btn.toggleClass('active');
+      fabricCanvas.isDrawingMode = isDrawingMode = btn.hasClass('active');
+
+      if (isDrawingMode) {
+        $('#btn-switch-draw-mode>span').text('Save drawing');
+        $('#btn-undo-draw').removeClass('hide');
+      } else {
+        $('#btn-switch-draw-mode>span').text('Start drawing');
+        $('#btn-undo-draw').addClass('hide');
+      }
+      
+      // save when drawing is finished
+      if (!isDrawingMode && drawnPathObjects.length > 0) {
+        var objects = fabricCanvas.getObjects();
+        var objectsToGroup = new Array();
+
+        // clone path as images and create group
+        for (i in drawnPathObjects) {
+          objectsToGroup.push(drawnPathObjects[i].cloneAsImage());
+        }
+
+        // group new image objects
+        var group = new fabric.Group(objectsToGroup);
+        fabricCanvas.add(group);
+
+        console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
+
+        // hide all existing images to avoid that overlapping areas will be saved as image
+        for (i in objects) {
+          if (objects[i].type == 'image') {
+            objects[i].hide();
+          } 
+        }
+
+        group.cloneAsImage(function (img) {
+          // console.log(group);
+          var base64_image = fabricCanvas.toDataURL({
+            format: 'png',
+            left: group.left,
+            top: group.top,
+            width: group.width,
+            height: group.height
+          });
+
+          // save on server
+          $.post('/media', {
+            image_base64: base64_image.replace('data:image/png;base64,',''),
+            scale: 1.0,
+            angle: 0.0,
+            x: group.left,
+            y: group.top,
+            type: 'whiteboard'
+          },
+          function(data, status) {
+            // clean canvas
+            fabricCanvas.remove(group);
+            for (i in drawnPathObjects) {
+              fabricCanvas.remove(drawnPathObjects[i]);
+            }
+            drawnPathObjects = new Array();
+
+            // show all objects
+            for (var i = 0; i < fabricCanvas.getObjects().length; i++) {
+              fabricCanvas.item(i).show();
+            }
+          }); 
+        });
+      }
     });
 
     $(document).bind('dragover', function(e) {
