@@ -16,7 +16,7 @@ define([
      * Variables
      *******************************/
     var canvas;
-    var fabricCanvas
+    var fabricCanvas;
 
     var lastX, lastY;
     var dragStart, dragged;
@@ -27,6 +27,7 @@ define([
     var canvasObjectsIndex = new Array();
 
     var splashScreen = $('.splash-screen');
+    var drawnPathObjects = new Array();
 
     /*******************************
      * Socket.io handles
@@ -185,6 +186,23 @@ define([
 
       if (fabricCanvas == null) {
         fabricCanvas = new fabric.Canvas('canvas');
+
+        // extend fabricjs with show/hide functionality
+        // see https://groups.google.com/d/msg/fabricjs/cbdFgTH7UXc/jj6iVoNYmVUJ
+        fabric.Object.prototype.hide = function() {
+          this.set({
+            opacity: 0,
+            selectable: false
+          });
+        };
+
+        fabric.Object.prototype.show = function() {
+          this.set({
+            opacity: 1,
+            selectable: true
+          });
+        };
+
         fabricCanvas.on('object:modified', function(options) {
           ajaxUpdateMedia(options.target);
         });
@@ -200,21 +218,8 @@ define([
 
         fabricCanvas.on('path:created', function(obj) {
           // free-drawing
-
-          /*
-          console.log("image:");
-
-          obj.path.setFill("#000000");
-
-          //console.log(obj.path.cloneAsImage().toDataURL());
-
-          obj.path.cloneAsImage(function(image) {
-            //console.log()
-            $("<img>").attr("src", image.toDataURL()).appendTo("body");
-          });
-          */
           console.log("free-drawing path created");
-          
+          drawnPathObjects.push(obj.path);
         });
       }
 
@@ -588,37 +593,34 @@ define([
       btn.toggleClass('active');
       fabricCanvas.isDrawingMode = isDrawingMode = btn.hasClass('active');
       
+      // save when drawing is finished
       if (!isDrawingMode) {
         var objects = fabricCanvas.getObjects();
         var objectsToGroup = new Array();
 
-        // console.log('objects');
-        // console.log(objects);
-
-        // collect all added elements (path)
-        for (var i = 0; i < objects.length; i++) {
-          if (objects[i].hasOwnProperty('path')) {
-            // create image instance
-            objectsToGroup.push(fabricCanvas.item(i).cloneAsImage());
-            //objectsToGroup.push(objects[i].clone());
-            //fabricCanvas.remove(objects[i]);
-          }
+        // clone path as images and create group
+        for (i in drawnPathObjects) {
+          objectsToGroup.push(drawnPathObjects[i].cloneAsImage());
         }
-        
-        // remove path object from canvas
-        /*for (i in objects) {
-          if (objects[i].hasOwnProperty('path')) {
-            fabricCanvas.remove(objects[i]);
-          }
-        }
-*/
 
         // group new image objects
         var group = new fabric.Group(objectsToGroup);
         fabricCanvas.add(group);
 
         console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
-        //console.log(group.cloneAsImage().toDataURL());//.replace('data:image/png;base64,',''));
+
+        // hide all existing images to avoid that overlapping areas will be saved as image
+        for (i in objects) {
+          if (objects[i].type == 'image') {
+            objects[i].hide();
+          } 
+          /*if (objects[i].type != 'group') {
+            console.log('hiding:');
+            console.log(objects[i]);
+            objects[i].hide();
+          }*/
+        }
+
         group.cloneAsImage(function (img) {
           // console.log(group);
           var base64_image = fabricCanvas.toDataURL({
@@ -628,7 +630,6 @@ define([
             width: group.width,
             height: group.height
           });
-          // $("<img>").attr("src", base64_image).appendTo("body");
 
           // save on server
           $.post('/media', {
@@ -640,42 +641,17 @@ define([
             type: 'whiteboard'
           },
           function(data, status) {
-            // console.log(data);
-
-            // console.log('objects (before remove)');
-            // console.log(fabricCanvas.getObjects());
-
+            // clean canvas
             fabricCanvas.remove(group);
-            var objects = fabricCanvas.getObjects();
-            for (i in objects) {
-              if (objects[i].hasOwnProperty('path')) {
-                fabricCanvas.remove(objects[i]);
-                // console.log('removing');
-                // console.log(objects[i]);
-              }
+            for (i in drawnPathObjects) {
+              fabricCanvas.remove(drawnPathObjects[i]);
             }
+            drawnPathObjects = new Array();
 
-            /*var objectsToRestore = new Array();
-            var objects = fabricCanvas.getObjects();
-
-            for (i in objects) {
-              if (objects[i].hasOwnProperty('name')) {
-                objectsToRestore.push(objects[i].clone());
-              }
+            // show all objects
+            for (var i = 0; i < fabricCanvas.getObjects().length; i++) {
+              fabricCanvas.item(i).show();
             }
-
-            console.log('restore: ' + objectsToRestore.length);
-
-            fabricCanvas.clear();
-            for (var i = 0; i < objectsToRestore.length; i++) {
-              console.log(objectsToRestore[i]);
-              fabricCanvas.add(objectsToRestore[i]);
-            }
-            fabricCanvas.renderAll();*/
-            // fabricCanvas.add(objectsToRestore);
-
-            // console.log('objects (after remove)');
-            // console.log(fabricCanvas.getObjects());
           }); 
         });
       }
