@@ -158,12 +158,12 @@ define([
         lockUniScaling: true,
         name: data.name,
         centeredRotation: true
-      }).scale(data.scale).setShadow({
+      }).scale(data.scale);/*.setShadow({
         color: 'rgba(0, 0, 0, 0.2)',
         blur: 10,
         offsetX: 0,
         offsetY: 0
-      });
+      });*/
 
       fabricCanvas.add(img);
 
@@ -661,10 +661,14 @@ define([
         }
 
         group.cloneAsImage(function (img) {
-          // console.log(group);
-          var density = 4.0;
+
+          // fabricCanvas.contextContainer.fillStyle = "rgb(255,255,255)";
+          // fabricCanvas.contextContainer.fillRect(group.left, group.top, group.width, group.height);
+          
+          var density = 2.0;
           var base64_image = fabricCanvas.toDataURL({
             format: 'png',
+            // quality: 1,
             multiplier: density,
             left: group.left,
             top: group.top,
@@ -674,7 +678,7 @@ define([
 
           // save on server
           $.post('/media', {
-            image_base64: base64_image.replace('data:image/png;base64,',''),
+            image_base64: base64_image.substr(base64_image.indexOf(';base64,') + ';base64,'.length),
             scale: 1.0 / density,
             angle: 0.0,
             x: group.left,
