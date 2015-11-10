@@ -130,14 +130,15 @@ module.exports = function(config, io) {
       // Check file type
       var fb = new Buffer(req.body.image_base64, 'base64');
       var ft = fileType(fb);
-      var size = sizeOf(fb);
 
-      if (ft.mime != 'image/jpeg' && ft.mime != 'image/png') {
+      if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
         return res.json({
           error: true,
           msg: 'file type not supported (needs to be image/jpeg or image/png)'
         });
       }
+
+      var size = sizeOf(fb);
 
       // Save media
       var fn = uuid.v4() + '.' + ft.ext;
