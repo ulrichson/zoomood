@@ -662,18 +662,20 @@ define([
 
         group.cloneAsImage(function (img) {
           // console.log(group);
+          var density = 4.0;
           var base64_image = fabricCanvas.toDataURL({
             format: 'png',
+            multiplier: density,
             left: group.left,
             top: group.top,
-            width: group.width,
+            width: group.width, 
             height: group.height
           });
 
           // save on server
           $.post('/media', {
             image_base64: base64_image.replace('data:image/png;base64,',''),
-            scale: 1.0,
+            scale: 1.0 / density,
             angle: 0.0,
             x: group.left,
             y: group.top,
