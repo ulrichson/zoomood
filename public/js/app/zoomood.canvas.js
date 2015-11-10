@@ -223,7 +223,13 @@ define([
             // save path in array to merge when drawing finished
             drawnPathObjects.push(obj.path);
 
-            // draw bounding box for free-drawn objects
+            fabricCanvas.renderAll();
+          }
+        });
+
+        fabricCanvas.on('after:render', function() {
+          // draw bounding box for free-drawn objects
+          if (fabricCanvas.isDrawingMode) {
             drawFreeDrawingBoundingBox();
           }
         });
@@ -275,7 +281,7 @@ define([
     var showCanvasBoundingRect = function(show) {
       fabricCanvas.on('after:render', show ? function() {
         fabricCanvas.contextContainer.strokeStyle = '#ff2800';
-        var bound = calculateCanvasBound();
+        var bound = calculateBounds();
         if (bound) {
           fabricCanvas.contextContainer.strokeRect(
           bound.left + 0.5,
@@ -404,7 +410,7 @@ define([
 
     var resetView = function() {
       fabricCanvas.deactivateAllWithDispatch();
-      var bound = calculateCanvasBound();
+      var bound = calculateBounds();
 
       var vw = fabricCanvas.getWidth();
       var vh = fabricCanvas.getHeight();
@@ -493,7 +499,7 @@ define([
       }
     };
 
-    var calculateCanvasBound = function(objects) {
+    var calculateBounds = function(objects) {
       objects = objects || fabricCanvas.getObjects();
 
       var xCoords = [];
@@ -546,7 +552,7 @@ define([
       padding = padding || 20;
       strokeStyle = strokeStyle || 'rgba(0, 180, 190, 0.3)';
       fabricCanvas.contextContainer.strokeStyle = strokeStyle;
-      var bound = calculateCanvasBound(drawnPathObjects);
+      var bound = calculateBounds(drawnPathObjects);
       fabricCanvas.contextContainer.strokeRect(
         bound.left - padding,
         bound.top - padding,
@@ -612,7 +618,8 @@ define([
         // remove last added path
         fabricCanvas.remove(drawnPathObjects[drawnPathObjects.length - 1]);
         drawnPathObjects.pop();
-        drawFreeDrawingBoundingBox();
+
+        fabricCanvas.renderAll();
       }
     });
 
