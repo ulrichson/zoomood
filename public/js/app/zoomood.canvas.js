@@ -217,9 +217,15 @@ define([
         });
 
         fabricCanvas.on('path:created', function(obj) {
-          // free-drawing
-          console.log("free-drawing path created");
-          drawnPathObjects.push(obj.path);
+          if (fabricCanvas.isDrawingMode) {
+            console.log("free-drawing path created");
+
+            // save path in array to merge when drawing finished
+            drawnPathObjects.push(obj.path);
+
+            // draw bounding box for free-drawn objects
+            drawFreeDrawingBoundingBox();
+          }
         });
       }
 
@@ -487,11 +493,12 @@ define([
       }
     };
 
-    var calculateCanvasBound = function() {
+    var calculateCanvasBound = function(objects) {
+      objects = objects || fabricCanvas.getObjects();
+
       var xCoords = [];
       var yCoords = [];
 
-      var objects = fabricCanvas.getObjects();
       for (i in objects) {
         var c = objects[i].oCoords;
         xCoords.push(c.tl.x);
@@ -534,6 +541,19 @@ define([
         }, 1500);
       }
     };
+
+    var drawFreeDrawingBoundingBox = function(strokeStyle, padding) {
+      padding = padding || 20;
+      strokeStyle = strokeStyle || 'rgba(0, 180, 190, 0.3)';
+      fabricCanvas.contextContainer.strokeStyle = strokeStyle;
+      var bound = calculateCanvasBound(drawnPathObjects);
+      fabricCanvas.contextContainer.strokeRect(
+        bound.left - padding,
+        bound.top - padding,
+        bound.width + 2 * padding,
+        bound.height + 2 * padding
+      );
+    }
 
     /*******************************
      * Events
@@ -592,6 +612,7 @@ define([
         // remove last added path
         fabricCanvas.remove(drawnPathObjects[drawnPathObjects.length - 1]);
         drawnPathObjects.pop();
+        drawFreeDrawingBoundingBox();
       }
     });
 
