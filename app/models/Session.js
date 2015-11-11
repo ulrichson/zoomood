@@ -7,6 +7,7 @@ var mongoose = require('mongoose'),
 	Media = mongoose.model('Media');
 
 var SessionSchema = mongoose.Schema({
+	_id: String,
 	name: String,
 	created: Date,
 	updated: Date,
@@ -16,9 +17,13 @@ var SessionSchema = mongoose.Schema({
 SessionSchema.pre('save', function(next) {
 	var d = new Date();
 
+	if (this.isNew) {
+		this._id = "session_" + d.getFullYear() + "" + ("0"+(d.getMonth()+1)).slice(-2) + "" + ("0" + d.getDate()).slice(-2) + "_" + ("0" + d.getHours()).slice(-2) + "" + ("0" + d.getMinutes()).slice(-2) + "_" + mongoose.Types.ObjectId();		
+	}
+
 	if (!this.name) {
-		this.name = "session_" + d.getFullYear() + "" + ("0"+(d.getMonth()+1)).slice(-2) + "" + ("0" + d.getDate()).slice(-2) + "_" + ("0" + d.getHours()).slice(-2) + "" + ("0" + d.getMinutes()).slice(-2) + "_" + this.id;		
-	}  
+		this.name = this._id;
+	}
 
 	if (!this.created) {
 		this.created = d;
@@ -27,7 +32,7 @@ SessionSchema.pre('save', function(next) {
   this.updated = d;
 
   // create directory for files
-  fs.mkdir(config.media + this.name);
+  fs.mkdir(config.media + this._id);
 
   next();
 });

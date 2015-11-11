@@ -9,11 +9,8 @@ module.exports = function(app, config, io) {
   // GET all media
   app.get('/media', media.getAll);
 
-  // GET media
+  // GET one media
   app.get('/media/:name', media.show);
-
-  // DELETE all media
-  app.delete('/media', media.deleteAll);
 
   // DELETE one media
   app.delete('/media/:name', media.deleteOne);
@@ -34,5 +31,5 @@ module.exports = function(app, config, io) {
   app.delete('/session', session.deleteAll);
 
   // DETELE one session
-  app.delete('/session/:name', session.deleteOne);
+  app.delete('/session/:id', session.deleteOne);
 }

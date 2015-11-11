@@ -58,42 +58,11 @@ module.exports = function(config, io) {
       })
     },
 
-    deleteAll: function(req, res) {
-      Media.remove({}, function(err) {
-        console.log('All media deleted');
-        res.json({ msg: 'all media deleted'});
-      });
-    },
-
     deleteOne: function(req, res) {
-      var fileToDelete = config.media + req.params.name;
-      fs.unlink(fileToDelete, function(err) {
-        if (err) {
-          console.error('Media delete from filesystem failed for "' + req.params.name + '"" (' + err + ')');
-          res.json({
-            error: true,
-            msg: 'Media delete failed for ' + req.params.name
-          });
-        } else {
-          Media.remove({
-            name: req.params.name
-          }, function(err) {
-            if (err) {
-              console.error('Media delete from datebase failed for "' + req.params.name + '"" (' + err + ')');
-              res.json({
-                error: true,
-                msg: 'Media delete failed for "' + req.params.name + '"'
-              });
-            } else {
-              console.info('Media "' + req.params.name + '" deleted');
-              res.json({
-                error: false,
-                msg: 'Media "' + req.params.name + '" deleted'
-              });
-            }
-          });
-        }
+      Media.where({ name: req.params.name }).findOne(function(err, media) {
+        media.remove();
       });
+      res.json({});
     },
 
     update: function(req, res) {
@@ -179,7 +148,7 @@ module.exports = function(config, io) {
         var x = req.body.x || config.canvas.initPosition.x + offsetX;
         var y = req.body.y || config.canvas.initPosition.y + offsetY;
 
-        fs.writeFile(config.media + session.name + '/' + fn, fb, function(err) {
+        fs.writeFile(config.media + session.id + '/' + fn, fb, function(err) {
           if (err) {
             msg = 'Media upload failed'
             console.log(msg + ' (' + err + ')');

@@ -12,12 +12,18 @@ var MediaSchema = mongoose.Schema({
   angle: Number,
   x: Number,
   y: Number,
-  session: { type: Schema.Types.ObjectId, ref: "Session" }
+  session: { type: String, ref: "Session" }
 });
 
 MediaSchema.pre('remove', function(next) {
+  var media = this;
 	var fileToDelete = config.publicPath + this.url;
-	fs.unlink(fileToDelete, next);
+	fs.unlink(fileToDelete, function(err) {
+    if (err) {
+      console.error('Media delete from filesystem failed for "' + media.name + '"" (' + err + ')')
+    }
+  });
+  next();
 });
 
 mongoose.model('Media', MediaSchema);
