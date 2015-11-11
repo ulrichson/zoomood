@@ -207,7 +207,7 @@ module.exports = function(config, io) {
               });
             }
 
-            msg = 'Media "' + fn + '" uploaded';
+            msg = 'Media "' + fn + '" uploaded to session "' + session.name + '"';
             console.log(msg);
             res.json({
               error: false,

@@ -1,6 +1,7 @@
 var path = require('path'),
     rootPath = path.normalize(__dirname + '/..'),
-    mediaPath = rootPath + '/public/files/';
+    publicPath = rootPath + '/public',
+    mediaPath = publicPath + '/files/',
     canvas = { initPosition: { x: 10, y: 10 }, initMaxSize: { w: 150, h: 150} };
 
 module.exports = {
@@ -8,6 +9,7 @@ module.exports = {
     db: 'mongodb://localhost/zoomood',
     root: rootPath,
     media: mediaPath,
+    publicPath: publicPath,
     canvas: canvas,
     app: {
       name: 'Zoomood Whiteboard Development'
@@ -17,7 +19,8 @@ module.exports = {
     db: 'mongodb://localhost/zoomood-test',
     root: rootPath,
     media: mediaPath,
-    ncanvas: canvas,
+    publicPath: publicPath,
+    canvas: canvas,
     app: {
       name: 'Zoomood Whiteboard Test'
     }
@@ -26,6 +29,7 @@ module.exports = {
     db: process.env.MONGO_URL, // this var is user:pass@host:port/dbname
     root: rootPath,
     media: mediaPath,
+    publicPath: publicPath,
     canvas: canvas,
     app: {
       name: 'Zoomood Whiteboard'

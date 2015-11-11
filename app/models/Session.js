@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
 	fs = require('fs'),
+	rimraf = require('rimraf'),
 	env = process.env.NODE_ENV || 'development',
 	config = require('../../config/config')[env],
 	Schema = mongoose.Schema,
@@ -40,15 +41,15 @@ SessionSchema.pre('remove', function(next) {
 	    media.remove();
 	  })
 	  .on('error', function(err) {
-	    // handle error
+	    console.error('Error removing session: ' + err);
 	  })
 	  .on('end', function() {
-	    fs.unlink(config.media + session.name, function(err) {
-				if (err) {
-					console.error("Couldn't delete folder for session \"" + session.name + "\” (" + err + ")");
-				}
-			next();
-	  	});
+	    rimraf(config.media + session.name, function(err) {
+	    	if (err) {
+	    		console.error('Error removong session directory: ' + err);
+	    	}
+	    	next();
+	    });
 	  });
 });
 

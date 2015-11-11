@@ -14,7 +14,7 @@ module.exports = function(config) {
             msg: msg
           });
         } else {
-        	console.log('Session "' + data.name + '"" created');
+        	console.log('Session "' + data.name + '" created');
           res.json({
           	session_name: data.name
           });
