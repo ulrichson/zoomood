@@ -60,9 +60,14 @@ module.exports = function(config, io) {
 
     deleteOne: function(req, res) {
       Media.where({ name: req.params.name }).findOne(function(err, media) {
-        media.remove();
+        if (media) {
+          media.remove();
+          console.info('Media "' + req.params.id + '" deleted');
+          res.json({ error: false, msg: 'Media "' + req.params.id + '" deleted' });
+        } else {
+          res.json({ error: true, msg: 'Media not available'});
+        }
       });
-      res.json({});
     },
 
     update: function(req, res) {
