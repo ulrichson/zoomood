@@ -83,8 +83,8 @@ module.exports = function(config) {
 		    		}
 
             // Remove active session if it was deleted
-            Active.count({ session: req.params.id}, function(count) {
-              if (count > 0) {
+            Active.where({}).findOne(function(err, active) {
+              if (active && active.session == req.params.id) {
                 Active.remove({ _id: 0 }, function(err) {});
               }
             });
@@ -112,7 +112,6 @@ module.exports = function(config) {
 
       Active.where({}).findOne(function(err, active) {
         if (active) {
-          res.json();
           Session.where({ _id: active.session }).findOne(function(err, session) {
             if (!session) {
               return res.json({
@@ -122,7 +121,6 @@ module.exports = function(config) {
             }
 
             var fb = new Buffer(req.body.image_base64, 'base64');
-            
             var ft = fileType(fb);
 
             if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
@@ -140,6 +138,7 @@ module.exports = function(config) {
                 msg = 'Canvas upload failed'
                 console.log(msg + ' (' + err + ')');
               }
+              res.json();
             });
           });
         } else {
