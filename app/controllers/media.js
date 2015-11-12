@@ -1,10 +1,13 @@
 var mongoose = require('mongoose'),
     Media = mongoose.model('Media'),
-    uuid = require('node-uuid')
+    Session = mongoose.model('Session'),
+    Active = mongoose.model('Active'),
+    uuid = require('node-uuid'),
     fs = require('fs'),
     fileType = require('file-type'),
-    require('buffer'),
     sizeOf = require('image-size');
+
+require('buffer');
 
 module.exports = function(config, io) {
   return {
@@ -18,21 +21,27 @@ module.exports = function(config, io) {
     },
 
     getAll: function(req, res) {
-      Media.find({}, function(err, docs) {
-        res.format({
-          html: function() {
-            res.render('media', {
-              media: docs,
-              title: 'Media'
+      Active.where({}).findOne(function(err, active) {
+        if (active) {
+          Media.find({ session: active.session }, function(err, docs) {
+            res.format({
+              html: function() {
+                res.render('media', {
+                  media: docs,
+                  title: 'Media'
+                });
+              },
+              json: function() {
+                res.json(docs);
+              },
+              text: function() {
+                res.send('');
+              }
             });
-          },
-          json: function() {
-            res.json(docs);
-          },
-          text: function() {
-            res.send('');
-          }
-        });
+          });
+        } else {
+          res.json();
+        }
       });
     },
 
@@ -57,39 +66,14 @@ module.exports = function(config, io) {
       })
     },
 
-    deleteAll: function(req, res) {
-      Media.remove({}, function(err) {
-        res.redirect('/');
-      });
-    },
-
     deleteOne: function(req, res) {
-      var fileToDelete = config.media + req.params.name;
-      fs.unlink(fileToDelete, function(err) {
-        if (err) {
-          console.error('Media delete from filesystem failed for "' + req.params.name + '"" (' + err + ')');
-          res.json({
-            error: true,
-            msg: 'Media delete failed for ' + req.params.name
-          });
+      Media.where({ name: req.params.name }).findOne(function(err, media) {
+        if (media) {
+          media.remove();
+          console.info('Media "' + req.params.name + '" deleted');
+          res.json({ error: false, msg: 'Media "' + req.params.id + '" deleted' });
         } else {
-          Media.remove({
-            name: req.params.name
-          }, function(err) {
-            if (err) {
-              console.error('Media delete from datebase failed for "' + req.params.name + '"" (' + err + ')');
-              res.json({
-                error: true,
-                msg: 'Media delete failed for "' + req.params.name + '"'
-              });
-            } else {
-              console.info('Media "' + req.params.name + '" deleted')
-              res.json({
-                error: false,
-                msg: 'Media "' + req.params.name + '" deleted'
-              });
-            }
-          });
+          res.json({ error: true, msg: 'Media not available'});
         }
       });
     },
@@ -127,78 +111,94 @@ module.exports = function(config, io) {
         });
       }
 
-      // Check file type
-      var fb = new Buffer(req.body.image_base64, 'base64');
-      var ft = fileType(fb);
+      Active.where({}).findOne(function(err, active) {
+        if (active) {
+          Session.where({ _id: active.session }).findOne(function(err, session) {
+            if (!session) {
+              return res.json({
+                error: true,
+                msg: 'session is invalid'
+              });
+            }
 
-      if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
-        return res.json({
-          error: true,
-          msg: 'file type not supported (needs to be image/jpeg or image/png)'
-        });
-      }
+            var fb = new Buffer(req.body.image_base64, 'base64');
+            var ft = fileType(fb);
 
-      var size = sizeOf(fb);
+            if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
+              return res.json({
+                error: true,
+                msg: 'file type not supported (needs to be image/jpeg or image/png)'
+              });
+            }
 
-      // Save media
-      var fn = uuid.v4() + '.' + ft.ext;
-      var s = req.body.scale || Math.min(config.canvas.initMaxSize.w / size.width, config.canvas.initMaxSize.h / size.height);
-      var a = req.body.angle || 0.0;
-      var type = req.body.type || "unknown";
-      
-      // Center image
-      var scaleWidth = size.width * s;
-      var scaledHeight = size.height * s;
-      var offsetX = 0;
-      var offsetY = 0;
+            var size = sizeOf(fb);
 
-      var longerEdge = Math.max(scaleWidth, scaledHeight);
-      if (scaleWidth > scaledHeight) {
-        offsetY = Math.round((longerEdge - scaledHeight) / 2);
-      } else {
-        offsetX = Math.round((longerEdge - scaleWidth) / 2);
-      }
+            // Save media
+            var fn = uuid.v4() + '.' + ft.ext;
+            var s = req.body.scale || Math.min(config.canvas.initMaxSize.w / size.width, config.canvas.initMaxSize.h / size.height);
+            var a = req.body.angle || 0.0;
+            var type = req.body.type || "unknown";
+            
+            // Center image
+            var scaleWidth = size.width * s;
+            var scaledHeight = size.height * s;
+            var offsetX = 0;
+            var offsetY = 0;
 
-      var x = req.body.x || config.canvas.initPosition.x + offsetX;
-      var y = req.body.y || config.canvas.initPosition.y + offsetY;
+            var longerEdge = Math.max(scaleWidth, scaledHeight);
+            if (scaleWidth > scaledHeight) {
+              offsetY = Math.round((longerEdge - scaledHeight) / 2);
+            } else {
+              offsetX = Math.round((longerEdge - scaleWidth) / 2);
+            }
 
-      fs.writeFile(config.media + fn, fb, function(err) {
-        if (err) {
-          msg = 'Media upload failed'
-          console.log(msg + ' (' + err + ')');
-          return res.json({
-            error: true,
-            msg: msg
-          });
-        }
-        new Media({
-          name: fn,
-          url: '/files/' + fn,
-          scale: s,
-          angle: a,
-          x: x,
-          y: y,
-          type: type
-        }).save(function(err, data) {
-          if (err) {
-            msg = 'Media upload failed'
-            console.log(msg + ' (' + err + ')');
-            return res.json({
-              error: true,
-              msg: msg
+            var x = req.body.x || config.canvas.initPosition.x + offsetX;
+            var y = req.body.y || config.canvas.initPosition.y + offsetY;
+
+            fs.writeFile(config.media + session.id + '/' + fn, fb, function(err) {
+              if (err) {
+                msg = 'Media upload failed'
+                console.log(msg + ' (' + err + ')');
+                return res.json({
+                  error: true,
+                  msg: msg
+                });
+              }
+              new Media({
+                name: fn,
+                url: '/files/' + session.name + '/' + fn,
+                scale: s,
+                angle: a,
+                x: x,
+                y: y,
+                type: type,
+                session: session
+              }).save(function(err, data) {
+                if (err) {
+                  msg = 'Media upload failed'
+                  console.log(msg + ' (' + err + ')');
+                  return res.json({
+                    error: true,
+                    msg: msg
+                  });
+                }
+
+                msg = 'Media "' + fn + '" uploaded to session "' + session.name + '"';
+                console.log(msg);
+                res.json({
+                  error: false,
+                  msg: msg
+                });
+
+                // Notify client(s) that new media was uploaded
+                io.emit('media uploaded', data);
+              });
             });
-          }
 
-          msg = 'Media "' + fn + '" uploaded';
-          console.log(msg);
-          res.json({
-            error: false,
-            msg: msg
           });
-
-          // Notify client(s) that new media was uploaded
-          io.emit('media uploaded', data);
-        });
+        } else {
+          res.json({ error: true, msg: 'no active session set' });
+        }
       });
     }
   }

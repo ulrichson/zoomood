@@ -2,10 +2,11 @@ define([
     'jquery',
     'socketio',
     'fabric',
+    'moment',
     'jquery.fileupload',
     'jquery.ui.widget',
     'bootstrap'
-], function($, io, fabric) {
+], function($, io, fabric, moment) {
 //  var fabricCanvas,
 //      socket = io.connect('http://localhost');
 //    ], function($, fabric) {
@@ -28,6 +29,7 @@ define([
 
     var splashScreen = $('.splash-screen');
     var drawnPathObjects = new Array();
+    var activeSession;
 
     /*******************************
      * Socket.io handles
@@ -203,17 +205,22 @@ define([
           });
         };
 
+        fabricCanvas.on('selection:cleared', postSessionCanvas);
+
         fabricCanvas.on('object:modified', function(options) {
           ajaxUpdateMedia(options.target);
+          postSessionCanvas();
         });
 
         fabricCanvas.on('object:added', function(obj) {
           // add last added  to index
           canvasObjectsIndex[obj.target.name] = fabricCanvas.toJSON().objects.length - 1;
+          postSessionCanvas();
         });
 
         fabricCanvas.on('object:removed', function(obj) {;
-          delete canvasObjectsIndex[obj.target.name]
+          delete canvasObjectsIndex[obj.target.name];
+          postSessionCanvas();
         });
 
         fabricCanvas.on('path:created', function(obj) {
@@ -559,7 +566,60 @@ define([
         bound.width + 2 * padding,
         bound.height + 2 * padding
       );
-    }
+    };
+
+    var populateSession = function() {
+      $.get('/session/active', function(active, status) {
+        activeSession = active;
+        $('#session-info').text(activeSession);
+        $.get('/session', function(data, status) {
+          $('#dropdown-session>li.session').remove();
+          $.each(data, function(index, session) {
+            var item = $('<li class="session' + (active && session._id == active ? ' active' : '') + '"><a href="#" data-id=' + session._id + '><strong>' + session.name + '</strong><br><small>' + moment(session.created).fromNow() + '</small></a></li>');
+            $('#dropdown-session').append(item);
+            item.find('a').click(function(e) {
+              var btn = $(this);
+              $.ajax({
+                url: '/session/active/' + btn.data('id'),
+                type: 'PUT',
+                success: function(data, textStatus, jqXHR) {
+                  if (data) {
+                    activeSession = btn.data('id');
+
+                    $('#dropdown-session>li.session').removeClass('active');
+                    btn.parent().addClass('active');
+
+                    loadSession();
+                  }
+                }
+              });
+            });
+          });
+        });
+      });
+    };
+
+    var loadSession = function() {
+      $('#session-info').text(activeSession);
+      fabricCanvas.clear();
+      ajaxGetMedia();
+    };
+
+    var postSessionCanvas = function() {
+      var density = 1.0;
+      var base64_image = fabricCanvas.toDataURL({
+        format: 'png',
+        multiplier: density
+      });
+
+      // strip header
+      base64_image = base64_image.substr(base64_image.indexOf(';base64,') + ';base64,'.length);
+
+      // save on server
+      $.post('/session/canvas', { image_base64: base64_image }, function(data, status) {
+        // console.log('saved session canvas');
+      }); 
+    };
 
     /*******************************
      * Events
@@ -600,11 +660,30 @@ define([
         case 8: // BACKSPACE
           deleteMedia();
           break;
-
         case 46: // DELETE
           deleteMedia();
           break;
       }
+    });
+
+    $('#btn-create-session').click(function() {
+      $.post('/session', function(data, status) {
+        populateSession();
+        loadSession();
+      });
+    });
+
+    $('#btn-delete-sessions').click(function() {
+      $.ajax({
+        url: '/session',
+        type: 'DELETE',
+        success: function(data, textStatus, jqXHR) {
+          $('#dropdown-session>li.session').remove();
+          fabricCanvas.clear();
+          $('#session-info').text('Please select or create a session');
+          console.log('all sessions deleted');
+        }
+      });
     });
 
     $('#btn-reset-view').click(function() {
@@ -632,9 +711,13 @@ define([
       if (isDrawingMode) {
         $('#btn-switch-draw-mode>span').text('Save drawing');
         $('#btn-undo-draw').removeClass('hide');
+        $('#btn-select-session').addClass('disabled');
+        $('#btn-reset-view').addClass('disabled');
       } else {
         $('#btn-switch-draw-mode>span').text('Start drawing');
         $('#btn-undo-draw').addClass('hide');
+        $('#btn-select-session').removeClass('disabled');
+        $('#btn-reset-view').removeClass('disabled');
       }
       
       // save when drawing is finished
@@ -719,8 +802,7 @@ define([
      * Code
      *******************************/
     initCanvas();
-    // initFileUpload();
     ajaxGetMedia();
-    // showCanvasBoundingRect(true);
+    populateSession();
   });
 })

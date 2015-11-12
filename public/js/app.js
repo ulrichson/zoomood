@@ -15,6 +15,7 @@ requirejs.config({
       bootstrap: 'lib/bootstrap/dist/js/bootstrap.min',
       socketio: '/socket.io/socket.io',
       fabric: 'lib/fabric/dist/fabric.require',
+      moment: 'lib/moment/min/moment.min',
       'jquery.fileupload': 'lib/jquery-file-upload/js/jquery.fileupload',
       'jquery.ui.widget': 'lib/jquery-file-upload/js/vendor/jquery.ui.widget'
     }

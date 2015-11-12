@@ -7,23 +7,36 @@ block content
 
   div.media-dropzone
 
+  p#session-info Please select or create a session
+
   div.bottom-toolbar
-    .main-menu
-      button#btn-reset-view.btn.btn-reset-view
-        | Fit items to screen
-        i.fa.fa-arrows-alt
-      button#btn-switch-draw-mode.btn
-        span Start drawing
-        i.fa.fa-pencil
-      button#btn-undo-draw.btn.hide
-        | Undo drawing
-        i.fa.fa-undo
-        //- .btn.pull-right.btn-share-board
-        //-  | share
-        //-  i.fa.fa-share-square-o
-        //- a.btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
-        //-   i.fa.fa-trash-o
-        //-   span &nbsp;Delete all
+    button#btn-reset-view.btn.btn-reset-view
+      | Fit items to screen
+      i.fa.fa-arrows-alt
+    button#btn-switch-draw-mode.btn
+      span Start drawing
+      i.fa.fa-pencil
+    button#btn-undo-draw.btn.hide
+      | Undo drawing
+      i.fa.fa-undo
+    .btn-group.dropup.pull-right
+      button#btn-select-session.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
+        | Select session
+        i.fa.fa-picture-o
+      ul#dropdown-session.dropdown-menu.dropdown-menu-right(aria-labelledby="btn-select-session")
+        li
+          a#btn-create-session(href="#")
+            | Create new session
+        li
+          a#btn-delete-sessions(href="#")
+            | Delete all sessions
+        li.divider(role="separator")
+      //- .btn.pull-right.btn-share-board
+      //-  | share
+      //-  i.fa.fa-share-square-o
+      //- a.btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
+      //-   i.fa.fa-trash-o
+      //-   span &nbsp;Delete all
 
   //- Modals
   div#modal-upload.modal-upload.modal.hide.fade(role="dialog")

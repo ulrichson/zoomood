@@ -1,6 +1,7 @@
 module.exports = function(app, config, io) {
 
   var media = require('./controllers/media')(config, io);
+  var session = require('./controllers/session')(config);
 
   // GET index
   app.get('/', media.home);
@@ -8,18 +9,36 @@ module.exports = function(app, config, io) {
   // GET all media
   app.get('/media', media.getAll);
 
-  // GET media
+  // GET one media
   app.get('/media/:name', media.show);
 
-  // DELETE all media
-  app.delete('/media/all', media.deleteAll);
-
-  // DELETE media
+  // DELETE one media
   app.delete('/media/:name', media.deleteOne);
 
-  // UPDATE media
+  // PUT media
   app.put('/media/:name', media.update);
 
   // POST media
   app.post('/media', media.post);
+
+  // POST session
+  app.post('/session', session.post);
+
+  // GET all sessions
+  app.get('/session', session.getAll);
+
+  // DETELE all session
+  app.delete('/session', session.deleteAll);
+
+  // DETELE one session
+  app.delete('/session/:id', session.deleteOne);
+
+  // GET active session
+  app.get('/session/active', session.getActive);
+
+  // PUT active session
+  app.put('/session/active/:id', session.setActive);
+
+  // POST session canvas
+  app.post('/session/canvas', session.postCanvas);
 }
