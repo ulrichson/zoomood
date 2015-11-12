@@ -7,6 +7,8 @@ block content
 
   div.media-dropzone
 
+  p#session-info Please select or create a session
+
   div.bottom-toolbar
     button#btn-reset-view.btn.btn-reset-view
       | Fit items to screen
@@ -20,11 +22,14 @@ block content
     .btn-group.dropup.pull-right
       button#btn-select-session.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
         | Select session
-        span.carret
+        i.fa.fa-picture-o
       ul#dropdown-session.dropdown-menu.dropdown-menu-right(aria-labelledby="btn-select-session")
         li
           a#btn-create-session(href="#")
             | Create new session
+        li
+          a#btn-delete-sessions(href="#")
+            | Delete all sessions
         li.divider(role="separator")
       //- .btn.pull-right.btn-share-board
       //-  | share

@@ -29,6 +29,7 @@ define([
 
     var splashScreen = $('.splash-screen');
     var drawnPathObjects = new Array();
+    var activeSession;
 
     /*******************************
      * Socket.io handles
@@ -563,13 +564,41 @@ define([
     };
 
     var populateSession = function() {
-      $.get('/session', function(data, status) {
-        $('#dropdown-session>li.session').remove();
-        $.each(data, function(index, session) {
-          $('#dropdown-session').append('<li class="session"><a href="#" data-id=' + session._id + '><strong>' + session.name + '</strong><br><small>' + moment(session.created).fromNow() + '</small></a></li>');
+      $.get('/session/active', function(active, status) {
+        activeSession = active;
+        $('#session-info').text(activeSession);
+        $.get('/session', function(data, status) {
+          $('#dropdown-session>li.session').remove();
+          $.each(data, function(index, session) {
+            var item = $('<li class="session' + (active && session._id == active ? ' active' : '') + '"><a href="#" data-id=' + session._id + '><strong>' + session.name + '</strong><br><small>' + moment(session.created).fromNow() + '</small></a></li>');
+            $('#dropdown-session').append(item);
+            item.find('a').click(function(e) {
+              var btn = $(this);
+              $.ajax({
+                url: '/session/active/' + btn.data('id'),
+                type: 'PUT',
+                success: function(data, textStatus, jqXHR) {
+                  if (data) {
+                    activeSession = btn.data('id');
+
+                    $('#dropdown-session>li.session').removeClass('active');
+                    btn.parent().addClass('active');
+
+                    loadSession();
+                  }
+                }
+              });
+            });
+          });
         });
       });
-    }
+    };
+
+    var loadSession = function() {
+      $('#session-info').text(activeSession);
+      fabricCanvas.clear();
+      ajaxGetMedia();
+    };
 
     /*******************************
      * Events
@@ -610,7 +639,6 @@ define([
         case 8: // BACKSPACE
           deleteMedia();
           break;
-
         case 46: // DELETE
           deleteMedia();
           break;
@@ -620,6 +648,20 @@ define([
     $('#btn-create-session').click(function() {
       $.post('/session', function(data, status) {
         populateSession();
+        loadSession();
+      });
+    });
+
+    $('#btn-delete-sessions').click(function() {
+      $.ajax({
+        url: '/session',
+        type: 'DELETE',
+        success: function(data, textStatus, jqXHR) {
+          $('#dropdown-session>li.session').remove();
+          fabricCanvas.clear();
+          $('#session-info').text('Please select or create a session');
+          console.log('all sessions deleted');
+        }
       });
     });
 
@@ -648,9 +690,13 @@ define([
       if (isDrawingMode) {
         $('#btn-switch-draw-mode>span').text('Save drawing');
         $('#btn-undo-draw').removeClass('hide');
+        $('#btn-select-session').addClass('disabled');
+        $('#btn-reset-view').addClass('disabled');
       } else {
         $('#btn-switch-draw-mode>span').text('Start drawing');
         $('#btn-undo-draw').addClass('hide');
+        $('#btn-select-session').removeClass('disabled');
+        $('#btn-reset-view').removeClass('disabled');
       }
       
       // save when drawing is finished
@@ -735,9 +781,7 @@ define([
      * Code
      *******************************/
     initCanvas();
-    // initFileUpload();
     ajaxGetMedia();
-    // showCanvasBoundingRect(true);
     populateSession();
   });
 })

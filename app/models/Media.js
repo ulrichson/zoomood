@@ -12,7 +12,7 @@ var MediaSchema = mongoose.Schema({
   angle: Number,
   x: Number,
   y: Number,
-  session: { type: String, ref: "Session" }
+  session: { type: String, ref: 'Session' }
 });
 
 MediaSchema.pre('remove', function(next) {

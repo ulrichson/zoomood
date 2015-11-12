@@ -6266,3 +6266,10 @@ body {
 .main-menu .btn {
   float: left;
 }
+#session-info {
+  position: absolute;
+  right: 10px;
+  text-align: right;
+  top: 10px;
+  z-index: -1;
+}

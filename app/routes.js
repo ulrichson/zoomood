@@ -15,7 +15,7 @@ module.exports = function(app, config, io) {
   // DELETE one media
   app.delete('/media/:name', media.deleteOne);
 
-  // UPDATE media
+  // PUT media
   app.put('/media/:name', media.update);
 
   // POST media
