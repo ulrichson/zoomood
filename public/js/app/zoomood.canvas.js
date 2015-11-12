@@ -205,17 +205,22 @@ define([
           });
         };
 
+        fabricCanvas.on('selection:cleared', postSessionCanvas);
+
         fabricCanvas.on('object:modified', function(options) {
           ajaxUpdateMedia(options.target);
+          postSessionCanvas();
         });
 
         fabricCanvas.on('object:added', function(obj) {
           // add last added  to index
           canvasObjectsIndex[obj.target.name] = fabricCanvas.toJSON().objects.length - 1;
+          postSessionCanvas();
         });
 
         fabricCanvas.on('object:removed', function(obj) {;
-          delete canvasObjectsIndex[obj.target.name]
+          delete canvasObjectsIndex[obj.target.name];
+          postSessionCanvas();
         });
 
         fabricCanvas.on('path:created', function(obj) {
@@ -598,6 +603,22 @@ define([
       $('#session-info').text(activeSession);
       fabricCanvas.clear();
       ajaxGetMedia();
+    };
+
+    var postSessionCanvas = function() {
+      var density = 1.0;
+      var base64_image = fabricCanvas.toDataURL({
+        format: 'png',
+        multiplier: density
+      });
+
+      // strip header
+      base64_image = base64_image.substr(base64_image.indexOf(';base64,') + ';base64,'.length);
+
+      // save on server
+      $.post('/session/canvas', { image_base64: base64_image }, function(data, status) {
+        // console.log('saved session canvas');
+      }); 
     };
 
     /*******************************

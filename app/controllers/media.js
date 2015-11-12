@@ -2,11 +2,12 @@ var mongoose = require('mongoose'),
     Media = mongoose.model('Media'),
     Session = mongoose.model('Session'),
     Active = mongoose.model('Active'),
-    uuid = require('node-uuid')
+    uuid = require('node-uuid'),
     fs = require('fs'),
     fileType = require('file-type'),
-    require('buffer'),
     sizeOf = require('image-size');
+
+require('buffer');
 
 module.exports = function(config, io) {
   return {

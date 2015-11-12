@@ -1,6 +1,10 @@
 var mongoose = require('mongoose'),
+    fs = require('fs'),
+    fileType = require('file-type'),
     Session = mongoose.model('Session'),
     Active = mongoose.model('Active');
+
+require('buffer');
 
 module.exports = function(config) {
   return {
@@ -95,6 +99,53 @@ module.exports = function(config) {
     			res.json({ error: true, msg: 'Session not available' });
     		}
     	});
+    },
+
+    postCanvas: function(req, res) {
+      // Check required fields
+      if (!req.body.image_base64) {
+        return res.json({
+          error: true,
+          msg: 'field image_base64 is missing'
+        });
+      }
+
+      Active.where({}).findOne(function(err, active) {
+        if (active) {
+          res.json();
+          Session.where({ _id: active.session }).findOne(function(err, session) {
+            if (!session) {
+              return res.json({
+                error: true,
+                msg: 'session is invalid'
+              });
+            }
+
+            var fb = new Buffer(req.body.image_base64, 'base64');
+            
+            var ft = fileType(fb);
+
+            if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
+              return res.json({
+                error: true,
+                msg: 'file type not supported (needs to be image/jpeg or image/png)'
+              });
+            }
+
+            // Save canvas
+            var fn = '__session.' + ft.ext;
+
+            fs.writeFile(config.media + session.id + '/' + fn, fb, function(err) {
+              if (err) {
+                msg = 'Canvas upload failed'
+                console.log(msg + ' (' + err + ')');
+              }
+            });
+          });
+        } else {
+          res.json({ error: true, msg: 'no active session set' });
+        }
+      });
     }
   }
 }

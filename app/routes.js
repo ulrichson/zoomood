@@ -38,4 +38,7 @@ module.exports = function(app, config, io) {
 
   // PUT active session
   app.put('/session/active/:id', session.setActive);
+
+  // POST session canvas
+  app.post('/session/canvas', session.postCanvas);
 }
