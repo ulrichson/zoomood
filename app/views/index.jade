@@ -26,10 +26,12 @@ block content
       ul#dropdown-session.dropdown-menu.dropdown-menu-right(aria-labelledby="btn-select-session")
         li
           a#btn-create-session(href="#")
-            | Create new session
+            i.fa.fa-plus(style="width: 25px")
+            | &nbsp;Create new session
         li
           a#btn-delete-sessions(href="#")
-            | Delete all sessions
+            i.fa.fa-warning.text-danger(style="width: 25px")
+            span.text-danger &nbsp;Delete all sessions
         li.divider(role="separator")
       //- .btn.pull-right.btn-share-board
       //-  | share
