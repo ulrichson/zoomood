@@ -2,10 +2,11 @@ define([
     'jquery',
     'socketio',
     'fabric',
+    'moment',
     'jquery.fileupload',
     'jquery.ui.widget',
     'bootstrap'
-], function($, io, fabric) {
+], function($, io, fabric, moment) {
 //  var fabricCanvas,
 //      socket = io.connect('http://localhost');
 //    ], function($, fabric) {
@@ -559,6 +560,15 @@ define([
         bound.width + 2 * padding,
         bound.height + 2 * padding
       );
+    };
+
+    var populateSession = function() {
+      $.get('/session', function(data, status) {
+        $('#dropdown-session>li.session').remove();
+        $.each(data, function(index, session) {
+          $('#dropdown-session').append('<li class="session"><a href="#" data-id=' + session._id + '><strong>' + session.name + '</strong><br><small>' + moment(session.created).fromNow() + '</small></a></li>');
+        });
+      });
     }
 
     /*******************************
@@ -605,6 +615,12 @@ define([
           deleteMedia();
           break;
       }
+    });
+
+    $('#btn-create-session').click(function() {
+      $.post('/session', function(data, status) {
+        populateSession();
+      });
     });
 
     $('#btn-reset-view').click(function() {
@@ -722,5 +738,6 @@ define([
     // initFileUpload();
     ajaxGetMedia();
     // showCanvasBoundingRect(true);
+    populateSession();
   });
 })

@@ -32,4 +32,10 @@ module.exports = function(app, config, io) {
 
   // DETELE one session
   app.delete('/session/:id', session.deleteOne);
+
+  // GET active session
+  app.get('/session/active', session.getActive);
+
+  // PUT active session
+  app.put('/session/active/:id', session.setActive);
 }

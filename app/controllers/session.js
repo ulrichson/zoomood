@@ -1,8 +1,30 @@
 var mongoose = require('mongoose'),
-    Session = mongoose.model('Session');
+    Session = mongoose.model('Session'),
+    Active = mongoose.model('Active');
 
 module.exports = function(config) {
   return {
+
+    getActive: function(req, res) {
+      Active.where({}).findOne(function(err, active) {
+        if (active) {
+          res.json(active.session);
+        } else {
+          res.json();
+        }
+      });
+    },
+
+    setActive: function(req, res) {
+      Active.update({ _id: 0 }, { session: req.params.id }, { upsert: true }, function (err) {
+        if (err) {
+          res.json();
+        } else {
+          res.json(req.params.id);
+        }
+      });
+    },
+
   	post: function(req, res) {
       // Save session
       new Session({ name: req.body.name }).save(function(err, data) {
@@ -15,6 +37,7 @@ module.exports = function(config) {
           });
         } else {
         	console.log('Session "' + data.id + '" created');
+          Active.update({ _id: 0 }, { session: data._id }, { upsert: true }, function (err) {});
           res.json({
           	session: data
           });
@@ -23,7 +46,7 @@ module.exports = function(config) {
     },
 
     getAll: function(req, res) {
-      Session.find({}, 'id, name', function(err, sessions) {
+      Session.find({}).select('name created').exec(function(err, sessions) {
         res.json(sessions);
       });
     },
@@ -37,6 +60,7 @@ module.exports = function(config) {
         console.error('Error removing session: ' + err);
       })
       .on('end', function() {
+          Active.remove({ _id: 0 }, function(err) {});
           console.log('All sessions deleted');
           res.json({ msg: 'all sessions deleted'});
       });
@@ -53,6 +77,13 @@ module.exports = function(config) {
 		            msg: 'Session delete failed for "' + req.params.id + '"'
 		          });
 		    		}
+
+            // Remove active session if it was deleted
+            Active.count({ session: req.params.id}, function(count) {
+              if (count > 0) {
+                Active.remove({ _id: 0 }, function(err) {});
+              }
+            });
 
 		    		console.info('Session "' + req.params.id + '" deleted');
 		        res.json({

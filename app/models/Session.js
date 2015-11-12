@@ -11,7 +11,7 @@ var SessionSchema = mongoose.Schema({
 	name: String,
 	created: Date,
 	updated: Date,
-	media: [{type: Schema.Types.ObjectId, ref: "Media"}]
+	media: [{type: Schema.Types.ObjectId, ref: 'Media'}]
 });
 
 SessionSchema.pre('save', function(next) {
@@ -59,3 +59,11 @@ SessionSchema.pre('remove', function(next) {
 });
 
 mongoose.model('Session', SessionSchema);
+
+var ActiveSchema = mongoose.Schema({
+	_id: Number,
+	session: {type: String, ref: 'Session'}
+});
+
+mongoose.model('Active', ActiveSchema);
+
