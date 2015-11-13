@@ -47,11 +47,11 @@ define([
       // update all media
       var objects = fabricCanvas.getObjects();
       for (i in objects) {
-        ajaxUpdateMedia(objects[i]);
+        updateMedia(objects[i]);
       }
     }
 
-    var ajaxUpdateMedia = function(media) {
+    var updateMedia = function(media) {
       var arr = [];
       var isGroup = false;
       if (media._objects) {
@@ -184,7 +184,7 @@ define([
         fabricCanvas.on('selection:cleared', postSessionCanvas);
 
         fabricCanvas.on('object:modified', function(options) {
-          ajaxUpdateMedia(options.target);
+          updateMedia(options.target);
           postSessionCanvas();
         });
 
