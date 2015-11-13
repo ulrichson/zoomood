@@ -23,7 +23,7 @@ define([
     var lastX, lastY;
     var dragStart, dragged;
 
-    var scaleFactor = 1.1;
+    var scaleFactor = 1.07;
     var spacePressed = false;
     var selectionEnabled = true;
     var canvasObjectsIndex = new Array();
