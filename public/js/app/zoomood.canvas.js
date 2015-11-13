@@ -54,15 +54,6 @@ define([
     }
 
     var ajaxUpdateMedia = function(media) {
-      // sync to server
-      /*socket.emit('update media', {
-        name: media.name,
-        scale: media.get('scaleX'),
-        angle: media.get('angle'),
-        x: media.get('left'),
-        y: media.get('top')
-      });*/
-
       var arr = [];
       var isGroup = false;
       if (media._objects) {
@@ -77,26 +68,12 @@ define([
         var name = arr[i].name;
         var obj = fabricCanvas.toJSON().objects[canvasObjectsIndex[name]];
         if (obj != null) {
-          $.ajax({
-            url: '/media/' + name,
-            type: 'PUT',
-            accepts: {
-              json: 'application/json'
-            },
-            contentType: 'application/json',
-            data: JSON.stringify({
-              scale: obj.scaleX,
-              angle: obj.angle,
-              x: obj.left,
-              y: obj.top
-            }),
-            beforeSend: function(xhr) {
-              // WORKAROUND. For any reason the 'accepts' fields isn't applied
-              xhr.setRequestHeader('Accept', 'application/json');
-            },
-            success: function(data, textStatus, jqXHR) {
-              console.log('media updated: ' + name);
-            }
+          socket.emit('update media', {
+            name: name,
+            scale: obj.scaleX,
+            angle: obj.angle,
+            x: obj.left,
+            y: obj.top
           });
         }
       }
@@ -284,7 +261,7 @@ define([
           });
         }
       });
-    }
+    };
 
     var showCanvasBoundingRect = function(show) {
       fabricCanvas.on('after:render', show ? function() {
@@ -298,26 +275,7 @@ define([
           bound.height);
         }
       } : null);
-    }
-
-    /*socket.on('update media', function(data) {
-      console.log('a client updated media', data);
-
-      // var objects = fabricCanvas.getObjects();
-
-      // for (var i in objects) {
-      //   console.log('TEST', objects[i], data);
-      //   if (data.name === objects[i].name) {
-      //     objects[i].left += data.left;
-      //     objects[i].top += data.top;
-      //     objects[i].setCoords();
-      //     console.log('YES');
-      //   }
-      // }
-
-      // fabricCanvas.renderAll();
-    })*/
-
+    };
 
     var translate = function(x, y) {
       var objects = fabricCanvas.getObjects();
