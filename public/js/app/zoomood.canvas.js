@@ -768,18 +768,22 @@ define([
           objectsToGroup.push(drawnPathObjects[i].cloneAsImage());
         }
 
+        // save all image into array in order to restore them later
+        var objectBuffer = new Array();
+        for (i in objects) {
+          if (objects[i].type == 'image') {
+            objectBuffer.push(fabric.util.object.clone(objects[i]));
+          } 
+        }
+
+        // clean canvas and re-render to avoid that (fragments of) other objects will be saved
+        fabricCanvas.clear().renderAll();
+
         // group new image objects
         var group = new fabric.Group(objectsToGroup);
         fabricCanvas.add(group);
 
         console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
-
-        // hide all existing images to avoid that overlapping areas will be saved as image
-        for (i in objects) {
-          if (objects[i].type == 'image') {
-            objects[i].hide();
-          } 
-        }
 
         group.cloneAsImage(function (img) {
 
@@ -814,10 +818,13 @@ define([
             }
             drawnPathObjects = new Array();
 
-            // show all objects
-            for (var i = 0; i < fabricCanvas.getObjects().length; i++) {
-              fabricCanvas.item(i).show();
+            // restore old objects on canvas
+            for (var i in objectBuffer) {
+              fabricCanvas.add(objectBuffer[i]);
             }
+
+            // free resources
+            delete objectBuffer;
           }); 
         });
       }
