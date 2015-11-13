@@ -2,22 +2,43 @@
  * Module dependencies.
  */
 
-var express = require('express'),
-    mongoose = require('mongoose'),
-    // newrelic = require('newrelic'),
-    env = process.env.NODE_ENV || 'development',
-    fs = require('fs'),
-    http = require('http'),
-    config = require('./config/config')[env];
+var http = require('http');
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var methodOverride = require('method-override');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+// var multer = require('multer');
+var errorHandler = require('errorhandler');
+var mongoose = require('mongoose');
+var fs = require('fs');
 
-/**
- * Main app.
- */
+var env = process.env.NODE_ENV || 'development';
+var config = require('./config/config')[env];
 
 // App
 var app = express();
 
-// DB
+app.set('port', process.env.PORT || 3000);
+app.set('views', path.join(__dirname, '/app/views'));
+app.set('view engine', 'jade');
+
+// app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(logger('dev'));
+app.use(methodOverride());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(multer());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// error handling middleware should be loaded after the loading the routes
+if ('development' == app.get('env')) {
+  app.use(errorHandler());
+}
+
+// MongoDB
 mongoose.connect(config.db);
 
 // Bootstrap models
@@ -33,8 +54,6 @@ var server = http.createServer(app);
 var io = require('./app/socket')(server);
 
 // Config
-require('./app/express')(app, config);
-require('./app/upload')(app, config);
 require('./app/routes')(app, config, io);
 
 // Create files directory if not exists
@@ -44,5 +63,5 @@ if (!fs.existsSync(config.media)){
 
 // Start server
 server.listen(app.get('port'), function() {
-  console.log("Express server listening on port " + app.get('port'));
+  console.log('Whiteboard server listening on port ' + app.get('port'));
 });
