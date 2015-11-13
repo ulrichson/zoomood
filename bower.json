@@ -1,6 +1,6 @@
 {
-  "name": "Zommood Whiteboard",
-  "version": "0.0.0",
+  "name": "Zommood",
+  "version": "1.0.0",
   "homepage": "https://github.com/ulrichson/zoomood",
   "authors": [
     "Ulrich Lehner <me@ulrichlehner.com>",
@@ -25,7 +25,6 @@
     "open-sans": "~1.1.0"
   },
   "resolutions": {
-    "jquery": ">= 1.9.0",
-    "font-awesome": "~4.4.0"
+    "jquery": ">= 1.9.0"
   }
 }

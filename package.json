@@ -1,6 +1,12 @@
 {
-  "name": "zoomood",
-  "version": "0.1.1",
+  "name": "Zommood",
+  "version": "1.0.0",
+  "homepage": "https://github.com/ulrichson/zoomood",
+  "authors": [
+    "Ulrich Lehner <me@ulrichlehner.com>",
+    "Jonatan Dahl <dahl.jonatan@hotmail.com>"
+  ],
+  "license": "MIT",
   "private": true,
   "scripts": {
     "postinstall": "bower install"
