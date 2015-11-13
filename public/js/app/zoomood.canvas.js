@@ -729,6 +729,12 @@ define([
 
     $('#btn-switch-draw-mode').click(function() {
       var btn = $('#btn-switch-draw-mode');
+
+      if (!activeSession) {
+        toastr.error('Please create a session or select an existing one', 'No session active');
+        return;
+      }
+
       var isDrawingMode = false;
       btn.toggleClass('active');
       fabricCanvas.isDrawingMode = isDrawingMode = btn.hasClass('active');
