@@ -18,15 +18,14 @@
   "dependencies": {
     "fabric": "1.6.x",
     "bootstrap": "~3.1.1",
-    "font-awesome": "~4.1.0",
+    "font-awesome": "~4.4.0",
     "requirejs": "2.1.x",
     "moment": "~2.10.6",
-    "toastr": "~2.1.2"
-  },
-  "devDependencies": {
-    "css-loaders": "~1.1.1"
+    "toastr": "~2.1.2",
+    "open-sans": "~1.1.0"
   },
   "resolutions": {
-    "jquery": ">= 1.9.0"
+    "jquery": ">= 1.9.0",
+    "font-awesome": "~4.4.0"
   }
 }

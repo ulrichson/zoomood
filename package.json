@@ -25,6 +25,7 @@
     "twitter-bootstrap-node": "*"
   },
   "devDependencies": {
+    "gulp": "^3.9.0",
     "gulp-autoprefixer": "0.0.7",
     "gulp-cssmin": "^0.1.5",
     "gulp-less": "^1.2.3",

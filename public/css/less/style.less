@@ -1,26 +1,46 @@
 // Libs
-// @import "//code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css";
-@import "//fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,800";
-@import "//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css";
-@import (less) "../../lib/bootstrap/dist/css/bootstrap.min.css";
-// @import (less) "../../lib/jquery-file-upload/css/jquery.fileupload-ui.css";
+@import "../../lib/open-sans/css/open-sans.min.css";
+@import "../../lib/font-awesome/css/font-awesome.min.css";
+@import "../../lib/bootstrap/dist/css/bootstrap.min.css";
 @import "../../lib/toastr/toastr.less";
 
 // Vars
 @import "globals/variables";
 
-// Base
-@import "base";
-@import "layout";
-
 // Modules
 @import "modules/canvas";
-@import "modules/fileupload";
 @import "modules/splash-screen";
-@import "modules/loader";
 
-@btn-color: rgba(0,0,0,0.2);
-@btn-color-hover: rgba(0,0,0,0.6);
+body {
+  background: url(@backgroundImageUrl) repeat top left;
+  font-family: 'Open Sans';
+  font-weight: 300;
+}
+
+code {
+  background-color: rgba(0,0,0,0.1);
+  color: #000;
+  margin-left: 4px;
+  margin-right: 4px;
+  border-radius: 0;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+h2 {
+  font-weight: 800;
+}
+
+.btn {
+  border-radius: 0;
+  &:active {
+    box-shadow: none;
+  }
+}
+
+.fileupload {
+  display: none;
+}
 
 .top-toolbar {
   height: 55px;
