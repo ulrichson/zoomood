@@ -9,7 +9,7 @@ npm install
 
 ## Build
 
-- `gulp build` to convert less files into css
+- `gulp less` to convert less files into css
 - `bower install` when bower packages for the front-end code changed or are non-existent
 
 ## Run
@@ -20,7 +20,7 @@ node app.js
 
 Furthermore, MongoDB must be running (e.g. `mongod --dbpath ~/.mongodb/data`).
 
-## Debugging
+## Debug
 
 Install debugger with `npm install -g node-inspector` and run `node-debug app.js`.
 
