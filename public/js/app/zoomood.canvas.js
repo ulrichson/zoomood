@@ -233,34 +233,6 @@ define([
       console.log('canvas initialized (w: ' + canvasDomWidth + 'px, h: ' + canvasDomHeight + 'px)');
     };
 
-    var initFileUpload = function() {
-      $('#fileupload').fileupload({
-        dataType: 'json',
-        dropZone: $('#dropzone'),
-        done: function(e, data) {
-          var name = data.result.files[0].name;
-          console.log('file uploaded: ' + name);
-          ajaxGetMedia(name);
-        },
-        progressall: function(e, data) {
-          var progress = parseInt(data.loaded / data.total * 100, 10);
-          $('#upload-progress .bar').css('width', progress + '%');
-          $('#upload-progress .bar').text(progress + '%');
-          if (progress == 100) {
-            window.setTimeout(function() {
-              $('#modal-upload').modal('hide');
-            }, 300);
-          }
-        },
-        start: function(e) {
-          $('#modal-upload').modal({
-            backdrop: 'static',
-            keyboard: false
-          });
-        }
-      });
-    };
-
     var showCanvasBoundingRect = function(show) {
       fabricCanvas.on('after:render', show ? function() {
         fabricCanvas.contextContainer.strokeStyle = '#ff2800';
