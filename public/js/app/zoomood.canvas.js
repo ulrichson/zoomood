@@ -693,7 +693,7 @@ define([
       $.post('/session', function(data, status) {
         populateSession();
         loadSession();
-        toastr.success('You can start using the whiteboard', 'Session created');
+        toastr.success('Your are using the new session now', 'Session created');
       });
     });
 
@@ -738,11 +738,17 @@ define([
         $('#btn-undo-draw').removeClass('hide');
         $('#btn-select-session').addClass('disabled');
         $('#btn-reset-view').addClass('disabled');
+        toastr.info('You can start drawing');
       } else {
         $('#btn-switch-draw-mode>span').text('Start drawing');
         $('#btn-undo-draw').addClass('hide');
         $('#btn-select-session').removeClass('disabled');
-        $('#btn-reset-view').removeClass('disabled');
+        $('#btn-reset-view').removeClass('disabled')
+        if (drawnPathObjects.length > 0) {
+          toastr.success('Your drawing is saved');
+        } else {
+          toastr.info('Drawing mode stopped');
+        }
       }
       
       // save when drawing is finished
