@@ -4,8 +4,6 @@ define([
     'fabric',
     'moment',
     'toastr',
-    'jquery.fileupload',
-    'jquery.ui.widget',
     'bootstrap'
 ], function($, io, fabric, moment, toastr) {
 //  var fabricCanvas,

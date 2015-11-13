@@ -8,9 +8,7 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var methodOverride = require('method-override');
-var session = require('express-session');
 var bodyParser = require('body-parser');
-// var multer = require('multer');
 var errorHandler = require('errorhandler');
 var mongoose = require('mongoose');
 var fs = require('fs');
@@ -30,7 +28,6 @@ app.use(logger('dev'));
 app.use(methodOverride());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(multer());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // error handling middleware should be loaded after the loading the routes
