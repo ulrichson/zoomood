@@ -704,6 +704,7 @@ define([
         success: function(data, textStatus, jqXHR) {
           $('#dropdown-session>li.session').remove();
           fabricCanvas.clear();
+          activeSession = null;
           $('#session-info').text('Please select or create a session');
           console.log('all sessions deleted');
           toastr.warning('You need to create a new session to continue', 'All sessions deleted');
