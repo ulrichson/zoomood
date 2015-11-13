@@ -3,10 +3,11 @@ define([
     'socketio',
     'fabric',
     'moment',
+    'toastr',
     'jquery.fileupload',
     'jquery.ui.widget',
     'bootstrap'
-], function($, io, fabric, moment) {
+], function($, io, fabric, moment, toastr) {
 //  var fabricCanvas,
 //      socket = io.connect('http://localhost');
 //    ], function($, fabric) {
@@ -587,6 +588,12 @@ define([
                   if (activeSession == btn.data('id')) {
                     activeSession = null;
                     loadSession();
+                    
+                  }
+                  if (activeSession == null) {
+                    toastr.warning('You need to create a new session or select an existing one to continue', 'Session removed');
+                  } else {
+                    toastr.info('Session removed');
                   }
                   btn.parent().remove();
                 }
@@ -605,6 +612,7 @@ define([
                     btn.parent().addClass('active');
 
                     loadSession();
+                    toastr.info('Session activated');
                   }
                 }
               });
@@ -685,6 +693,7 @@ define([
       $.post('/session', function(data, status) {
         populateSession();
         loadSession();
+        toastr.success('You can start using the whiteboard', 'Session created');
       });
     });
 
@@ -697,6 +706,7 @@ define([
           fabricCanvas.clear();
           $('#session-info').text('Please select or create a session');
           console.log('all sessions deleted');
+          toastr.warning('You need to create a new session to continue', 'All sessions deleted');
         }
       });
     });
