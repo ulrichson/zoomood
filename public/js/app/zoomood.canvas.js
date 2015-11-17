@@ -608,6 +608,7 @@ define([
         } else {
           ajaxDeleteMedia(fabricCanvas.getActiveObject());
         }
+        updateAllMedia();
       };
 
       var sendObject = function(where) {
@@ -747,6 +748,7 @@ define([
     };
 
     var enableDrawing = function() {
+      fabricCanvas.deactivateAllWithDispatch();
       fabricCanvas.isDrawingMode = true;
       $('#btn-switch-draw-mode').addClass('active');
       $('#btn-switch-draw-mode>span').text('Save drawing');
