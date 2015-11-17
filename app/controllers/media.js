@@ -71,9 +71,9 @@ module.exports = function(config, io) {
         if (media) {
           media.remove();
           console.info('Media "' + req.params.name + '" deleted');
-          res.json({ error: false, msg: 'Media "' + req.params.id + '" deleted' });
+          res.json({ message: 'media deleted', media_name: req.params.name });
         } else {
-          res.json({ error: true, msg: 'Media not available'});
+          res.status(404).json({ error: 'media not available'});
         }
       });
     },
@@ -105,30 +105,21 @@ module.exports = function(config, io) {
     post: function(req, res) {
       // Check required fields
       if (!req.body.image_base64) {
-        return res.json({
-          error: true,
-          msg: 'field image_base64 is missing'
-        });
+        return res.status(500).json({ error: 'field image_base64 is missing' });
       }
 
       Active.where({}).findOne(function(err, active) {
         if (active) {
           Session.where({ _id: active.session }).findOne(function(err, session) {
             if (!session) {
-              return res.json({
-                error: true,
-                msg: 'session is invalid'
-              });
+              return res.status(500).json({ error: 'session is invalid' });
             }
 
             var fb = new Buffer(req.body.image_base64, 'base64');
             var ft = fileType(fb);
 
             if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
-              return res.json({
-                error: true,
-                msg: 'file type not supported (needs to be image/jpeg or image/png)'
-              });
+              return res.status(500).json({ error: 'file type not supported (must be image/jpeg or image/png)' });
             }
 
             var size = sizeOf(fb);
@@ -157,12 +148,8 @@ module.exports = function(config, io) {
 
             fs.writeFile(config.media + session.id + '/' + fn, fb, function(err) {
               if (err) {
-                msg = 'Media upload failed'
-                console.log(msg + ' (' + err + ')');
-                return res.json({
-                  error: true,
-                  msg: msg
-                });
+                console.error('Media upload failed' + ' (' + err + ')');
+                return res.status(500).json({ error: 'media upload failed' });
               }
               new Media({
                 name: fn,
@@ -175,20 +162,13 @@ module.exports = function(config, io) {
                 session: session
               }).save(function(err, data) {
                 if (err) {
-                  msg = 'Media upload failed'
-                  console.log(msg + ' (' + err + ')');
-                  return res.json({
-                    error: true,
-                    msg: msg
-                  });
+                  console.error(msg + ' (' + err + ')');
+                  return res.status(500).json({ error: 'media upload failed' });
                 }
 
                 msg = 'Media "' + fn + '" uploaded to session "' + session.name + '"';
-                console.log(msg);
-                res.json({
-                  error: false,
-                  msg: msg
-                });
+                console.info(msg);
+                res.json({ message: 'media upload susccessful', media: data });
 
                 // Notify client(s) that new media was uploaded
                 io.emit('media uploaded', data);
@@ -197,7 +177,7 @@ module.exports = function(config, io) {
 
           });
         } else {
-          res.json({ error: true, msg: 'no active session set' });
+          res.status(500).json({ error: 'no active session set' });
         }
       });
     }

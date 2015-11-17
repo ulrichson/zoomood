@@ -20,11 +20,11 @@ module.exports = function(config) {
     },
 
     setActive: function(req, res) {
-      Active.update({ _id: 0 }, { session: req.params.id }, { upsert: true }, function (err) {
+      Active.update({ _id: 0 }, { session: req.params.id }, { upsert: true }, function (err, data) {
         if (err) {
           res.json();
         } else {
-          res.json(req.params.id);
+          res.json({ message: 'session activated', session: data });
         }
       });
     },
@@ -33,18 +33,12 @@ module.exports = function(config) {
       // Save session
       new Session({ name: req.body.name }).save(function(err, data) {
       	if (err) {
-      		msg = 'Creating session failed'
-          console.error(msg + ' (' + err + ')');
-          res.json({
-            error: true,
-            msg: msg
-          });
+          console.error('Creating session failed' + ' (' + err + ')');
+          res.status(500).json({ error: 'creating session failed' });
         } else {
         	console.log('Session "' + data.id + '" created');
           Active.update({ _id: 0 }, { session: data._id }, { upsert: true }, function (err) {});
-          res.json({
-          	session: data
-          });
+          res.json({ message: 'session created', session: data });
         }
       });
     },
@@ -66,7 +60,7 @@ module.exports = function(config) {
       .on('end', function() {
           Active.remove({ _id: 0 }, function(err) {});
           console.log('All sessions deleted');
-          res.json({ msg: 'all sessions deleted'});
+          res.json({ message: 'all sessions deleted'});
       });
     },
 
@@ -76,10 +70,7 @@ module.exports = function(config) {
     			session.remove(function (err) {
 	    			if (err) {
 		    			console.error('Session delete from datebase failed for "' + req.params.id + '"" (' + err + ')');
-		          return res.json({
-		            error: true,
-		            msg: 'Session delete failed for "' + req.params.id + '"'
-		          });
+		          return res.status(500).json({ error: 'deleting session failed' });
 		    		}
 
             // Remove active session if it was deleted
@@ -90,13 +81,10 @@ module.exports = function(config) {
             });
 
 		    		console.info('Session "' + req.params.id + '" deleted');
-		        res.json({
-		          error: false,
-		          msg: 'Session "' + req.params.id + '" deleted'
-		        });
+		        res.json({ message: 'session deleted' });
 	    		});
     		} else {
-    			res.json({ error: true, msg: 'Session not available' });
+    			res.status(404).json({ error: 'session not available' });
     		}
     	});
     },
@@ -104,30 +92,21 @@ module.exports = function(config) {
     postCanvas: function(req, res) {
       // Check required fields
       if (!req.body.image_base64) {
-        return res.json({
-          error: true,
-          msg: 'field image_base64 is missing'
-        });
+        return res.status(500).json({ error: 'field image_base64 is missing' });
       }
 
       Active.where({}).findOne(function(err, active) {
         if (active) {
           Session.where({ _id: active.session }).findOne(function(err, session) {
             if (!session) {
-              return res.json({
-                error: true,
-                msg: 'session is invalid'
-              });
+              return res.status(500).json({ error: 'session invalid' });
             }
 
             var fb = new Buffer(req.body.image_base64, 'base64');
             var ft = fileType(fb);
 
             if (ft == null || (ft.mime != 'image/jpeg' && ft.mime != 'image/png')) {
-              return res.json({
-                error: true,
-                msg: 'file type not supported (needs to be image/jpeg or image/png)'
-              });
+              return res.status(500).json({ error: 'file type not supported (must be image/jpeg or image/png)' });
             }
 
             // Save canvas
@@ -135,14 +114,13 @@ module.exports = function(config) {
 
             fs.writeFile(config.media + session.id + '/' + fn, fb, function(err) {
               if (err) {
-                msg = 'Canvas upload failed'
-                console.log(msg + ' (' + err + ')');
+                console.error('Canvas upload failed' + ' (' + err + ')');
               }
-              res.json();
+              res.json({ message: 'canvas uploaded' });
             });
           });
         } else {
-          res.json({ error: true, msg: 'no active session set' });
+          res.status(500).json({ error: 'no active session set' });
         }
       });
     }
