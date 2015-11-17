@@ -81,8 +81,8 @@ define([
             name: name,
             scale: obj.scaleX,
             angle: obj.angle,
-            x: obj.left,
-            y: obj.top
+            x: arr.length > 1 ? obj.left : media.oCoords.tl.x,
+            y: arr.length > 1 ? obj.top : media.oCoords.tl.y
           });
         }
       }
@@ -189,28 +189,28 @@ define([
 
         fabricCanvas.on('selection:cleared', postSessionCanvas);
 
-        fabricCanvas.on('object:modified', function(options) {
-          updateMedia(options.target);
+        fabricCanvas.on('object:modified', function(event) {
+          updateMedia(event.target);
           postSessionCanvas();
         });
 
-        fabricCanvas.on('object:added', function(obj) {
+        fabricCanvas.on('object:added', function(event) {
           // add last added  to index
-          canvasObjectsIndex[obj.target.name] = fabricCanvas.toJSON().objects.length - 1;
+          canvasObjectsIndex[event.target.name] = fabricCanvas.toJSON().objects.length - 1;
           postSessionCanvas();
         });
 
-        fabricCanvas.on('object:removed', function(obj) {;
-          delete canvasObjectsIndex[obj.target.name];
+        fabricCanvas.on('object:removed', function(event) {;
+          delete canvasObjectsIndex[event.target.name];
           postSessionCanvas();
         });
 
-        fabricCanvas.on('path:created', function(obj) {
+        fabricCanvas.on('path:created', function(event) {
           if (fabricCanvas.isDrawingMode) {
             console.log("free-drawing path created");
 
             // save path in array to merge when drawing finished
-            drawnPathObjects.push(obj.path);
+            drawnPathObjects.push(event.path);
 
             fabricCanvas.renderAll();
           }
