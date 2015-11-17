@@ -13,6 +13,18 @@ define([
   $(function() {
 
     /*******************************
+     * Config
+     *******************************/
+    var scaleFactor = 1.07;
+    var freeDrawingPadding = 10;
+    var mediaShadow = {
+      color: 'rgba(0, 0, 0, 0.2)',
+      blur: 10,
+      offsetX: 0,
+      offsetY: 0
+    };
+
+    /*******************************
      * Variables
      *******************************/
     var canvas;
@@ -21,7 +33,6 @@ define([
     var lastX, lastY;
     var dragStart, dragged;
 
-    var scaleFactor = 1.07;
     var spacePressed = false;
     var selectionEnabled = true;
     var canvasObjectsIndex = new Array();
@@ -136,12 +147,7 @@ define([
         lockUniScaling: true,
         name: data.name,
         centeredRotation: true
-      }).scale(data.scale);/*.setShadow({
-        color: 'rgba(0, 0, 0, 0.2)',
-        blur: 10,
-        offsetX: 0,
-        offsetY: 0
-      });*/
+      }).scale(data.scale).setShadow(mediaShadow);
 
       fabricCanvas.add(img);
 
@@ -485,7 +491,7 @@ define([
     };
 
     var drawFreeDrawingBoundingBox = function(strokeStyle, padding) {
-      padding = padding || 20;
+      padding = padding || freeDrawingPadding;
       strokeStyle = strokeStyle || 'rgba(0, 180, 190, 0.3)';
       fabricCanvas.contextContainer.strokeStyle = strokeStyle;
       var bound = calculateBounds(drawnPathObjects);
@@ -519,7 +525,6 @@ define([
                     if (activeSession == btn.data('id')) {
                       activeSession = null;
                       loadSession();
-                      
                     }
                     if (activeSession == null) {
                       toastr.warning('You need to create a new session or select an existing one to continue', 'Session removed');
@@ -710,7 +715,7 @@ define([
           } 
         }
 
-        // Create overlay image of current canvas to avoid flickering when canvas objects are removed and added
+        // create overlay image of current canvas to avoid flickering when canvas objects are removed and added
         var overlayImage = $('<img/>').attr({
           src: fabricCanvas.toDataURL(),
           style: 'position: absolute, z-index: 9999'
@@ -725,6 +730,17 @@ define([
 
         console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
 
+        // create rect with white background
+        var rect = new fabric.Rect({
+          left: group.left - freeDrawingPadding,
+          top: group.top - freeDrawingPadding,
+          fill: 'white',
+          width: group.width + 2 * freeDrawingPadding,
+          height: group.height + 2 * freeDrawingPadding
+        })
+        fabricCanvas.add(rect);
+        fabricCanvas.sendToBack(rect);
+
         group.cloneAsImage(function (img) {
 
           // fabricCanvas.contextContainer.fillStyle = "rgb(255,255,255)";
@@ -735,10 +751,10 @@ define([
             format: 'png',
             // quality: 1,
             multiplier: density,
-            left: group.left,
-            top: group.top,
-            width: group.width, 
-            height: group.height
+            left: group.left - freeDrawingPadding,
+            top: group.top - freeDrawingPadding,
+            width: group.width + 2 * freeDrawingPadding, 
+            height: group.height + 2 * freeDrawingPadding
           });
 
           // save on server
@@ -746,8 +762,8 @@ define([
             image_base64: base64_image.substr(base64_image.indexOf(';base64,') + ';base64,'.length),
             scale: 1.0 / density,
             angle: 0.0,
-            x: group.left,
-            y: group.top,
+            x: group.left - freeDrawingPadding,
+            y: group.top - freeDrawingPadding,
             type: 'whiteboard'
           },
           function(data, status) {
@@ -765,6 +781,9 @@ define([
 
             // remove overlay image
             overlayImage.remove();
+
+            // remove rect
+            rect.remove();
 
             // free resources
             delete objectBuffer;
