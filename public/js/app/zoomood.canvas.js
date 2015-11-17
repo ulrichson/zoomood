@@ -72,7 +72,6 @@ define([
       for (var i = 0; i < arr.length; i++) {
         var name = arr[i].name;
         var obj = fabricCanvas.toJSON().objects[fabricCanvas.getObjects().indexOf(arr[i])];
-        console.log(obj);
         if (obj != null) {
           socket.emit('update media', {
             name: name,
