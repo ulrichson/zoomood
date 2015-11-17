@@ -557,6 +557,8 @@ define([
     };
 
     var postSessionCanvas = function() {
+      if (!activeSession) return;
+
       var density = 1.0;
       var base64_image = fabricCanvas.toDataURL({
         format: 'png',
@@ -567,8 +569,8 @@ define([
       base64_image = base64_image.substr(base64_image.indexOf(';base64,') + ';base64,'.length);
 
       // save on server
-      $.post('/session/canvas', { image_base64: base64_image }, function(data, status) {
-        // console.log('saved session canvas');
+      $.post('/session/canvas', { image_base64: base64_image }).fail(function () {
+        console.log('session canvas upload failed')
       }); 
     };
 
