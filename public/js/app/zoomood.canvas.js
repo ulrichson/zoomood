@@ -710,6 +710,12 @@ define([
           } 
         }
 
+        // Create overlay image of current canvas to avoid flickering when canvas objects are removed and added
+        var overlayImage = $('<img/>').attr({
+          src: fabricCanvas.toDataURL(),
+          style: 'position: absolute, z-index: 9999'
+        }).appendTo('.canvas-container');
+
         // clean canvas and re-render to avoid that (fragments of) other objects will be saved
         fabricCanvas.clear().renderAll();
 
@@ -756,6 +762,9 @@ define([
             for (var i in objectBuffer) {
               fabricCanvas.add(objectBuffer[i]);
             }
+
+            // remove overlay image
+            overlayImage.remove();
 
             // free resources
             delete objectBuffer;
