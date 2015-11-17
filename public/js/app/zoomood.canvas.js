@@ -35,7 +35,6 @@ define([
 
     var spacePressed = false;
     var selectionEnabled = true;
-    var canvasObjectsIndex = new Array();
 
     var splashScreen = $('.splash-screen');
     var drawnPathObjects = new Array();
@@ -72,7 +71,8 @@ define([
       // save data
       for (var i = 0; i < arr.length; i++) {
         var name = arr[i].name;
-        var obj = fabricCanvas.toJSON().objects[canvasObjectsIndex[name]];
+        var obj = fabricCanvas.toJSON().objects[fabricCanvas.getObjects().indexOf(arr[i])];
+        console.log(obj);
         if (obj != null) {
           socket.emit('update media', {
             name: name,
@@ -196,13 +196,10 @@ define([
         });
 
         fabricCanvas.on('object:added', function(event) {
-          // add last added  to index
-          canvasObjectsIndex[event.target.name] = fabricCanvas.toJSON().objects.length - 1;
           postSessionCanvas();
         });
 
-        fabricCanvas.on('object:removed', function(event) {;
-          delete canvasObjectsIndex[event.target.name];
+        fabricCanvas.on('object:removed', function(event) {
           postSessionCanvas();
         });
 
