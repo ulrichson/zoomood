@@ -416,6 +416,7 @@ define([
 
     var handleScroll = function(evt) {
       if (spacePressed) {
+        fabricCanvas.deactivateAllWithDispatch();
         var delta = evt.wheelDelta ? evt.wheelDelta / 40 : evt.detail ? -evt.detail : 0;
         if (delta > 0) {
           zoomIn(lastX, lastY)
