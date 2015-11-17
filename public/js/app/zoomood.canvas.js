@@ -668,7 +668,11 @@ define([
           deleteMedia();
           break;
         case 8: // BACKSPACE
-          deleteMedia();
+          if (fabricCanvas.isDrawingMode) {
+            undoDrawing();
+          } else {
+            deleteMedia();
+          }
           break;
         case 46: // DELETE
           deleteMedia();
@@ -684,6 +688,18 @@ define([
           break;
         case 34: // PAGE DOWN
           sendObject('back');
+          break;
+        case 13: // ENTER
+          if (fabricCanvas.isDrawingMode) {
+            disableDrawing();
+            saveDrawing();
+          }
+          break;
+        case 27: // ESCAPE
+          if (fabricCanvas.isDrawingMode) {
+            cancelDrawing();
+            disableDrawing();
+          }
           break;
       }
     });
@@ -742,6 +758,7 @@ define([
       $('#btn-cancel-draw').removeClass('hide');
       $('#btn-select-session').addClass('disabled');
       $('#btn-reset-view').addClass('disabled');
+      toastr.info('You can start drawing');
     };
 
     var disableDrawing = function() {
@@ -752,10 +769,15 @@ define([
       $('#btn-cancel-draw').addClass('hide');
       $('#btn-select-session').removeClass('disabled');
       $('#btn-reset-view').removeClass('disabled');
+      if (drawnPathObjects.length > 0) {
+        toastr.success('Your drawing is saved');
+      } else {
+        toastr.info('Drawing mode stopped');
+      }
     }
 
     var saveDrawing = function() {
-      if (!fabricCanvas.isDrawingMode && drawnPathObjects.length > 0) {
+      if (drawnPathObjects.length > 0) {
         var objects = fabricCanvas.getObjects();
         var objectsToGroup = new Array();
 
@@ -873,18 +895,14 @@ define([
 
       if (isDrawingMode) {
         enableDrawing();
-        toastr.info('You can start drawing');
       } else {
         disableDrawing();
-        if (drawnPathObjects.length > 0) {
-          toastr.success('Your drawing is saved');
-        } else {
-          toastr.info('Drawing mode stopped');
-        }
       }
       
       // save when drawing is finished
-      saveDrawing();
+      if (!isDrawingMode) {
+        saveDrawing();
+      }
     });
 
     $(document).bind('dragover', function(e) {
