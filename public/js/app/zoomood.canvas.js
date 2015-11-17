@@ -799,9 +799,6 @@ define([
         fabricCanvas.sendToBack(rect);
 
         group.cloneAsImage(function (img) {
-
-          // fabricCanvas.contextContainer.fillStyle = "rgb(255,255,255)";
-          // fabricCanvas.contextContainer.fillRect(group.left, group.top, group.width, group.height);
           
           var density = 2.0;
           var base64_image = fabricCanvas.toDataURL({
