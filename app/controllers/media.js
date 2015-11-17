@@ -167,7 +167,8 @@ module.exports = function(config, io) {
                 x: x,
                 y: y,
                 type: type,
-                session: session
+                session: session,
+                order: 9999 // easy workaround instead of finding the maximum order
               }).save(function(err, data) {
                 if (err) {
                   console.error(msg + ' (' + err + ')');
