@@ -627,7 +627,7 @@ define([
       $.post('/session', function(data, status) {
         populateSession();
         loadSession();
-        toastr.success('Your are using the new session now', 'Session created');
+        toastr.success('You are using the new session now', 'Session created');
       });
     });
 
