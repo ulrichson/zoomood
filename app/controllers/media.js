@@ -13,7 +13,7 @@ module.exports = function(config, io) {
   return {
     home: function(req, res) {
       Media.find({}, function(err, docs) {
-        res.render('index', {
+        res.render('canvas', {
           media: docs,
           title: 'Welcome to zoomood!'
         });
@@ -33,14 +33,21 @@ module.exports = function(config, io) {
               },
               json: function() {
                 res.json(docs);
-              },
-              text: function() {
-                res.send('');
               }
             });
           });
         } else {
-          res.json();
+          res.format({
+            html: function() {
+              res.render('media', {
+                media: [],
+                title: 'Media'
+              });
+            },
+            json: function() {
+              res.json();
+            }
+          });
         }
       });
     },

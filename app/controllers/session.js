@@ -44,8 +44,18 @@ module.exports = function(config) {
     },
 
     getAll: function(req, res) {
-      Session.find({}).select('name created').exec(function(err, sessions) {
-        res.json(sessions);
+      Session.find({}).select('name created updated').exec(function(err, sessions) {
+        res.format({
+          html: function() {
+            res.render('session', {
+              sessions: sessions,
+              title: 'Sessions'
+            });
+          },
+          json: function() {
+            res.json(sessions);
+          }
+        });
       });
     },
 

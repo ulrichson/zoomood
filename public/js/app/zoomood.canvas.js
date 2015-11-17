@@ -501,51 +501,55 @@ define([
       $.get('/session/active', function(active, status) {
         activeSession = active;
         $('#session-info').text(activeSession);
-        $.get('/session', function(data, status) {
-          $('#dropdown-session>li.session').remove();
-          $.each(data, function(index, session) {
-            var item = $('<li class="session' + (active && session._id == active ? ' active' : '') + '"><a href="#" data-id=' + session._id + '><strong>' + session.name + '</strong><br><small>' + moment(session.created).fromNow() + '</small><span class="remove label label-danger pull-right" data-id=' + session._id + '><i class="fa fa-trash-o"> Remove</i></span></a>');
-            $('#dropdown-session').append(item);
-            item.find('.remove').click(function(e) {
-              e.stopPropagation();
-              var btn = $(this);
-              $.ajax({
-                url: '/session/' + btn.data('id'),
-                type: 'DELETE',
-                success: function(data, textStatus, jqXHR) {
-                  if (activeSession == btn.data('id')) {
-                    activeSession = null;
-                    loadSession();
-                    
+        $.ajax({
+          url: '/session',
+          dataType: 'json',
+          success: function(data, status) {
+            $('#dropdown-session>li.session').remove();
+            $.each(data, function(index, session) {
+              var item = $('<li class="session' + (active && session._id == active ? ' active' : '') + '"><a href="#" data-id=' + session._id + '><strong>' + session.name + '</strong><br><small>' + moment(session.created).fromNow() + '</small><span class="remove label label-danger pull-right" data-id=' + session._id + '><i class="fa fa-trash-o"> Remove</i></span></a>');
+              $('#dropdown-session').append(item);
+              item.find('.remove').click(function(e) {
+                e.stopPropagation();
+                var btn = $(this);
+                $.ajax({
+                  url: '/session/' + btn.data('id'),
+                  type: 'DELETE',
+                  success: function(data, textStatus, jqXHR) {
+                    if (activeSession == btn.data('id')) {
+                      activeSession = null;
+                      loadSession();
+                      
+                    }
+                    if (activeSession == null) {
+                      toastr.warning('You need to create a new session or select an existing one to continue', 'Session removed');
+                    } else {
+                      toastr.info('Session removed');
+                    }
+                    btn.parent().remove();
                   }
-                  if (activeSession == null) {
-                    toastr.warning('You need to create a new session or select an existing one to continue', 'Session removed');
-                  } else {
-                    toastr.info('Session removed');
+                });
+              });
+              item.find('a').click(function(e) {
+                var btn = $(this);
+                $.ajax({
+                  url: '/session/active/' + btn.data('id'),
+                  type: 'PUT',
+                  success: function(data, textStatus, jqXHR) {
+                    if (data) {
+                      activeSession = btn.data('id');
+
+                      $('#dropdown-session>li.session').removeClass('active');
+                      btn.parent().addClass('active');
+
+                      loadSession();
+                      toastr.info('Session activated');
+                    }
                   }
-                  btn.parent().remove();
-                }
+                });
               });
             });
-            item.find('a').click(function(e) {
-              var btn = $(this);
-              $.ajax({
-                url: '/session/active/' + btn.data('id'),
-                type: 'PUT',
-                success: function(data, textStatus, jqXHR) {
-                  if (data) {
-                    activeSession = btn.data('id');
-
-                    $('#dropdown-session>li.session').removeClass('active');
-                    btn.parent().addClass('active');
-
-                    loadSession();
-                    toastr.info('Session activated');
-                  }
-                }
-              });
-            });
-          });
+          }
         });
       });
     };
@@ -633,8 +637,8 @@ define([
         type: 'DELETE',
         success: function(data, textStatus, jqXHR) {
           $('#dropdown-session>li.session').remove();
-          fabricCanvas.clear();
           activeSession = null;
+          fabricCanvas.clear();
           $('#session-info').text('Please select or create a session');
           console.log('all sessions deleted');
           toastr.warning('You need to create a new session to continue', 'All sessions deleted');

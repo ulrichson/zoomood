@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  .container
+    h1 Sessions
+    if sessions.length > 0
+      p.lead Below is a list of sessions.
+      each session in sessions
+        div.media
+          img.media-object.pull-left.img-rounded(src="/files/#{session.id}/__session.png", alt="#{session.name}", width=200, style="border: 1px solid silver")
+          div.media-body
+            h2.media-heading= session.name
+            p
+              strong id:&nbsp;
+              | #{session.id}
+              br
+              strong created:&nbsp;
+              | #{session.created}
+              br
+              strong updated:&nbsp;
+              | #{session.updated}
+    else
+      p.lead
+        em No sessions available.

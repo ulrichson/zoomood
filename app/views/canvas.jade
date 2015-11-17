@@ -1,8 +1,25 @@
 extends layout
 
+block scripts
+  script(data-main="js/app",src="lib/requirejs/require.js")
+
 block content
+  .splash-screen
+    .loader
+      .dot
+      .dot
+      .dot
+      .dot
+    .loading-message
+      h2 Loading zoomboard
+      p
+        | Tip: Use
+        code Space
+        | and
+        code Mouse
+        | to zoom and pan
+
   div#canvas-wrapper.canvas-wrapper
-    //- div.dropzone
     canvas.canvas#canvas
 
   div.media-dropzone
@@ -34,12 +51,6 @@ block content
             i.fa.fa-warning.text-danger(style="width: 25px")
             span.text-danger &nbsp;Delete all sessions
         li.divider(role="separator")
-      //- .btn.pull-right.btn-share-board
-      //-  | share
-      //-  i.fa.fa-share-square-o
-      //- a.btn-delete-all.btn.btn-danger.pull-right(href="#modal-confirm-delete-all", role="button", data-toggle="modal")
-      //-   i.fa.fa-trash-o
-      //-   span &nbsp;Delete all
 
   //- Modals
   div#modal-upload.modal-upload.modal.hide.fade(role="dialog")
