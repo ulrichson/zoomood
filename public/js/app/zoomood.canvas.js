@@ -717,48 +717,45 @@ define([
       // setSelection(true);
     });
 
-    $('#btn-undo-draw').click(function() {
-      if (fabricCanvas.isDrawingMode) {
-        // remove last added path
+    var undoDrawing = function() {
+      // remove last added path
+      fabricCanvas.remove(drawnPathObjects[drawnPathObjects.length - 1]);
+      drawnPathObjects.pop();
+
+      fabricCanvas.renderAll();
+    };
+
+    var cancelDrawing = function() {
+      while (drawnPathObjects.length > 0) {
         fabricCanvas.remove(drawnPathObjects[drawnPathObjects.length - 1]);
         drawnPathObjects.pop();
-
-        fabricCanvas.renderAll();
-      }
-    });
-
-    $('#btn-switch-draw-mode').click(function() {
-      var btn = $('#btn-switch-draw-mode');
-
-      if (!activeSession) {
-        toastr.error('Please create a session or select an existing one', 'No session active');
-        return;
       }
 
-      var isDrawingMode = false;
-      btn.toggleClass('active');
-      fabricCanvas.isDrawingMode = isDrawingMode = btn.hasClass('active');
+      fabricCanvas.renderAll();
+    };
 
-      if (isDrawingMode) {
-        $('#btn-switch-draw-mode>span').text('Save drawing');
-        $('#btn-undo-draw').removeClass('hide');
-        $('#btn-select-session').addClass('disabled');
-        $('#btn-reset-view').addClass('disabled');
-        toastr.info('You can start drawing');
-      } else {
-        $('#btn-switch-draw-mode>span').text('Start drawing');
-        $('#btn-undo-draw').addClass('hide');
-        $('#btn-select-session').removeClass('disabled');
-        $('#btn-reset-view').removeClass('disabled')
-        if (drawnPathObjects.length > 0) {
-          toastr.success('Your drawing is saved');
-        } else {
-          toastr.info('Drawing mode stopped');
-        }
-      }
-      
-      // save when drawing is finished
-      if (!isDrawingMode && drawnPathObjects.length > 0) {
+    var enableDrawing = function() {
+      fabricCanvas.isDrawingMode = true;
+      $('#btn-switch-draw-mode').addClass('active');
+      $('#btn-switch-draw-mode>span').text('Save drawing');
+      $('#btn-undo-draw').removeClass('hide');
+      $('#btn-cancel-draw').removeClass('hide');
+      $('#btn-select-session').addClass('disabled');
+      $('#btn-reset-view').addClass('disabled');
+    };
+
+    var disableDrawing = function() {
+      fabricCanvas.isDrawingMode = false;
+      $('#btn-switch-draw-mode').removeClass('active');
+      $('#btn-switch-draw-mode>span').text('Start drawing');
+      $('#btn-undo-draw').addClass('hide');
+      $('#btn-cancel-draw').addClass('hide');
+      $('#btn-select-session').removeClass('disabled');
+      $('#btn-reset-view').removeClass('disabled');
+    }
+
+    var saveDrawing = function() {
+      if (!fabricCanvas.isDrawingMode && drawnPathObjects.length > 0) {
         var objects = fabricCanvas.getObjects();
         var objectsToGroup = new Array();
 
@@ -850,6 +847,47 @@ define([
           }); 
         });
       }
+    };
+
+    $('#btn-undo-draw').click(function() {
+      if (fabricCanvas.isDrawingMode) {
+        undoDrawing();
+      }
+    });
+
+    $('#btn-cancel-draw').click(function() {
+      if (fabricCanvas.isDrawingMode) {
+        cancelDrawing();
+        disableDrawing();
+      }
+    });
+
+    $('#btn-switch-draw-mode').click(function() {
+      var btn = $('#btn-switch-draw-mode');
+
+      if (!activeSession) {
+        toastr.error('Please create a session or select an existing one', 'No session active');
+        return;
+      }
+
+      var isDrawingMode = false;
+      btn.toggleClass('active');
+      isDrawingMode = btn.hasClass('active');
+
+      if (isDrawingMode) {
+        enableDrawing();
+        toastr.info('You can start drawing');
+      } else {
+        disableDrawing();
+        if (drawnPathObjects.length > 0) {
+          toastr.success('Your drawing is saved');
+        } else {
+          toastr.info('Drawing mode stopped');
+        }
+      }
+      
+      // save when drawing is finished
+      saveDrawing();
     });
 
     $(document).bind('dragover', function(e) {
