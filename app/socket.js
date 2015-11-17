@@ -18,7 +18,8 @@ module.exports = function(server) {
         scale: data.scale,
         angle: data.angle,
         x: data.x,
-        y: data.y
+        y: data.y,
+        order: data.order
       }, function(err) {
         if (err) {
           console.error('Error updating media "' + data.name + '" (' + err + ')');

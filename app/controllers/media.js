@@ -23,7 +23,7 @@ module.exports = function(config, io) {
     getAll: function(req, res) {
       Active.where({}).findOne(function(err, active) {
         if (active) {
-          Media.find({ session: active.session }, function(err, docs) {
+          Media.find({ session: active.session }).sort('order').exec(function(err, docs) {
             res.format({
               html: function() {
                 res.render('media', {
@@ -93,7 +93,8 @@ module.exports = function(config, io) {
         scale: b.scale,
         angle: b.angle,
         x: b.x,
-        y: b.y
+        y: b.y,
+        order: b.order
       }, function(err) {
         res.format({
           html: function() {

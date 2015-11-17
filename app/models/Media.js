@@ -12,6 +12,7 @@ var MediaSchema = mongoose.Schema({
   angle: Number,
   x: Number,
   y: Number,
+  order: { type: Number, default: -1 },
   session: { type: String, ref: 'Session' }
 });
 

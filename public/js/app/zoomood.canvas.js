@@ -51,16 +51,13 @@ define([
       ajaxGetMedia(data.name, animate);
     });
 
-    /*******************************
-     * AJAX calls
-     *******************************/
-    var ajaxSaveCanvas = function() {
+    var updateAllMedia = function() {
       // update all media
       var objects = fabricCanvas.getObjects();
       for (i in objects) {
         updateMedia(objects[i]);
       }
-    }
+    };
 
     var updateMedia = function(media) {
       var arr = [];
@@ -82,12 +79,16 @@ define([
             scale: obj.scaleX,
             angle: obj.angle,
             x: arr.length > 1 ? obj.left : media.oCoords.tl.x,
-            y: arr.length > 1 ? obj.top : media.oCoords.tl.y
+            y: arr.length > 1 ? obj.top : media.oCoords.tl.y,
+            order: fabricCanvas.getObjects().indexOf(arr[i])
           });
         }
       }
     };
 
+    /*******************************
+     * AJAX calls
+     *******************************/
     var ajaxDeleteMedia = function(media) {
       $.ajax({
         url: '/media/' + media.name,
@@ -373,7 +374,7 @@ define([
       var s = vr < br ? vw / bw : vh / bh;
       scale(s * 0.95);
 
-      ajaxSaveCanvas();
+      updateAllMedia();
     };
 
     var addCanvasEventListener = function(canvas) {
@@ -402,7 +403,7 @@ define([
           };
 
           // save current state
-          ajaxSaveCanvas();
+          updateAllMedia();
         }
       }, false);
 
@@ -425,7 +426,7 @@ define([
         }
 
         // save current state
-        ajaxSaveCanvas();
+        updateAllMedia();
 
         return evt.preventDefault() && false;
       }
@@ -632,22 +633,24 @@ define([
             }
           });
           fabricCanvas.discardActiveGroup().renderAll();
+          updateAllMedia();
         } else if (fabricCanvas.getActiveObject()) {
           var obj = fabricCanvas.getActiveObject();
           switch (where) {
-              case 'backward':
-                fabricCanvas.sendBackwards(obj);
-                break;
-              case 'back':
-                fabricCanvas.sendToBack(obj);
-                break;
-              case 'forward':
-                fabricCanvas.bringForward(obj);
-                break;
-              case 'front':
-                fabricCanvas.bringToFront(obj);
-                break;
-            }
+            case 'backward':
+              fabricCanvas.sendBackwards(obj);
+              break;
+            case 'back':
+              fabricCanvas.sendToBack(obj);
+              break;
+            case 'forward':
+              fabricCanvas.bringForward(obj);
+              break;
+            case 'front':
+              fabricCanvas.bringToFront(obj);
+              break;
+          }
+          updateAllMedia();
         }
       }
 
