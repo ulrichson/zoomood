@@ -4,20 +4,6 @@ block scripts
   script(data-main="js/app",src="lib/requirejs/require.js")
 
 block content
-  .splash-screen
-    .loader
-      .dot
-      .dot
-      .dot
-      .dot
-    .loading-message
-      h2 Loading zoomboard
-      p
-        | Tip: Use
-        code Space
-        | and
-        code Mouse
-        | to zoom and pan
 
   div#canvas-wrapper.canvas-wrapper
     canvas.canvas#canvas
@@ -72,3 +58,34 @@ block content
       form.delete-all(action="/media/all", method="POST")
         input(type="hidden", name="_method", value="DELETE")
         button.btn.btn-danger DELETE
+
+  //- Splash Screen
+  .splash-screen
+    .loader
+      .dot
+      .dot
+      .dot
+      .dot
+    .loading-message
+      h2 Loading zoomboard
+      p
+        | Tip: Use
+        code Space
+        | and
+        code Mouse
+        | to 
+        strong zoom and pan.
+        br
+        | The
+        code up
+        | and
+        code down
+        | keys will move objects 
+        strong forward or backward.
+        br
+        | The
+        code page up
+        | and
+        code page down
+        | keys sends objects to the 
+        strong front or back.

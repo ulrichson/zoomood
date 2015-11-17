@@ -611,6 +611,50 @@ define([
           ajaxDeleteMedia(fabricCanvas.getActiveObject());
         }
       };
+
+      var sendObject = function(where) {
+        if (fabricCanvas.getActiveGroup()) {
+          fabricCanvas.getActiveGroup().forEachObject(function(obj) {
+            switch (where) {
+              case 'backward':
+                fabricCanvas.sendBackwards(obj);
+                break;
+              case 'back':
+                fabricCanvas.sendToBack(obj);
+                break;
+              case 'forwad':
+                fabricCanvas.bringForward(obj);
+                break;
+              case 'front':
+                fabricCanvas.bringToFront(obj);
+                break;
+            }
+          });
+          fabricCanvas.discardActiveGroup().renderAll();
+        } else if (fabricCanvas.getActiveObject()) {
+          var obj = fabricCanvas.getActiveObject();
+          switch (where) {
+              case 'backward':
+                fabricCanvas.sendBackwards(obj);
+                break;
+              case 'back':
+                fabricCanvas.sendToBack(obj);
+                break;
+              case 'forward':
+                fabricCanvas.bringForward(obj);
+                break;
+              case 'front':
+                fabricCanvas.bringToFront(obj);
+                break;
+            }
+        }
+      }
+
+      // prevent page scrolling
+      if (evt.keyCode == 38 || evt.keyCode == 40 || evt.keyCode == 33 || evt.keyCode == 34) {
+        evt.preventDefault();
+      }
+
       switch (evt.keyCode) {
         case 32: // SPACE
           spacePressed = true;
@@ -624,6 +668,18 @@ define([
           break;
         case 46: // DELETE
           deleteMedia();
+          break;
+        case 38: // UP ARROW
+          sendObject('forward');
+          break;
+        case 40: // DOWN ARROW
+          sendObject('backward');
+          break;
+        case 33: // PAGE UP
+          sendObject('front');
+          break;
+        case 34: // PAGE DOWN
+          sendObject('back');
           break;
       }
     });
@@ -811,5 +867,6 @@ define([
     initCanvas();
     ajaxGetMedia();
     populateSession();
+    // showSplashScreen();
   });
 })
