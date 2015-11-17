@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 var http = require('http');
 var express = require('express');
 var path = require('path');
@@ -15,7 +11,7 @@ var fs = require('fs');
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config/config')[env];
 
-// App
+// App Setup
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -27,11 +23,6 @@ app.use(methodOverride());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-// error handling middleware should be loaded after the loading the routes
-if ('development' == app.get('env')) {
-  app.use(errorHandler());
-}
 
 // MongoDB
 mongoose.connect(config.db);
@@ -50,6 +41,11 @@ var io = require('./app/socket')(server);
 
 // Config
 require('./app/routes')(app, config, io);
+
+// Error handling middleware should be loaded after loading routes
+if ('development' == app.get('env')) {
+  app.use(errorHandler());
+}
 
 // Create files directory if not exists
 if (!fs.existsSync(config.media)){
