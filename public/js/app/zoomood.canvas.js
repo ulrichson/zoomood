@@ -605,10 +605,11 @@ define([
             ajaxDeleteMedia(obj);
           });
           fabricCanvas.discardActiveGroup().renderAll();
-        } else {
+          updateAllMedia();
+        } else if (fabricCanvas.getActiveObject()) {
           ajaxDeleteMedia(fabricCanvas.getActiveObject());
+          updateAllMedia();
         }
-        updateAllMedia();
       };
 
       var sendObject = function(where) {
@@ -651,8 +652,8 @@ define([
         }
       }
 
-      // prevent page scrolling
-      if (evt.keyCode == 38 || evt.keyCode == 40 || evt.keyCode == 33 || evt.keyCode == 34) {
+      // prevent browser shortcuts to interfer with app
+      if (evt.keyCode == 38 || evt.keyCode == 40 || evt.keyCode == 33 || evt.keyCode == 34 || evt.keyCode == 8) {
         evt.preventDefault();
       }
 
@@ -696,6 +697,11 @@ define([
           if (fabricCanvas.isDrawingMode) {
             cancelDrawing();
             disableDrawing();
+          }
+          break;
+        case 68: // 'D'
+          if (!fabricCanvas.isDrawingMode) {
+            enableDrawing();
           }
           break;
       }
