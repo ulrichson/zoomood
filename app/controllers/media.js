@@ -159,31 +159,33 @@ module.exports = function(config, io) {
                 console.error('Media upload failed' + ' (' + err + ')');
                 return res.status(500).json({ error: 'media upload failed' });
               }
-              new Media({
-                name: fn,
-                url: '/files/' + session.name + '/' + fn,
-                scale: s,
-                angle: a,
-                x: x,
-                y: y,
-                type: type,
-                session: session,
-                order: 9999 // easy workaround instead of finding the maximum order
-              }).save(function(err, data) {
-                if (err) {
-                  console.error(msg + ' (' + err + ')');
-                  return res.status(500).json({ error: 'media upload failed' });
-                }
 
-                msg = 'Media "' + fn + '" uploaded to session "' + session.name + '"';
-                console.info(msg);
-                res.json({ message: 'media upload susccessful', media: data });
+              Media.findOne({session: session }).sort('-order').exec(function(err, result) {
+                new Media({
+                  name: fn,
+                  url: '/files/' + session.name + '/' + fn,
+                  scale: s,
+                  angle: a,
+                  x: x,
+                  y: y,
+                  type: type,
+                  session: session,
+                  order: result ? result.order + 1 : 0
+                }).save(function(err, data) {
+                  if (err) {
+                    console.error(msg + ' (' + err + ')');
+                    return res.status(500).json({ error: 'media upload failed' });
+                  }
 
-                // Notify client(s) that new media was uploaded
-                io.emit('media uploaded', data);
+                  msg = 'Media "' + fn + '" uploaded to session "' + session.name + '"';
+                  console.info(msg);
+                  res.json({ message: 'media upload susccessful', media: data });
+
+                  // Notify client(s) that new media was uploaded
+                  io.emit('media uploaded', data);
+                });
               });
             });
-
           });
         } else {
           res.status(500).json({ error: 'no active session set' });
