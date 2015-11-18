@@ -45,7 +45,7 @@ define([
      *******************************/
     var socket = io();
     socket.on('media uploaded', function(data) {
-      console.log('media was uploaded');
+      // console.log('media was uploaded');
       var animate = data.type && data.type == 'whiteboard' ? false : true;
       ajaxGetMedia(data.name, animate);
     });
@@ -101,7 +101,7 @@ define([
         },
         success: function(data, textStatus, jqXHR) {
           fabricCanvas.remove(media);
-          console.log('media deleted: ' + media.name);
+          // console.log('media deleted: ' + media.name);
         }
       });
     };
@@ -113,7 +113,7 @@ define([
       $.getJSON('/media/' + name, function(data) {
         if (data.length) {
           $.each(data, function(key, value) {
-            console.log('media loaded: ' + value.name);
+            // console.log('media loaded: ' + value.name);
             fabric.Image.fromURL(value.url, function(img) {
               addZoomoodImage(img, value, animate);
               if (key == data.length - 1) {
@@ -123,7 +123,7 @@ define([
           });
         } else {
           if (!$.isEmptyObject(data)) {
-            console.log('media loaded: ' + data.name);
+            // console.log('media loaded: ' + data.name);
             fabric.Image.fromURL(data.url, function(img) {
               addZoomoodImage(img, data, animate);
             });
@@ -204,7 +204,7 @@ define([
 
         fabricCanvas.on('path:created', function(event) {
           if (fabricCanvas.isDrawingMode) {
-            console.log("free-drawing path created");
+            // console.log("free-drawing path created");
 
             // save path in array to merge when drawing finished
             drawnPathObjects.push(event.path);
@@ -233,7 +233,7 @@ define([
 
       addCanvasEventListener(canvas);
 
-      console.log('canvas initialized (w: ' + canvasDomWidth + 'px, h: ' + canvasDomHeight + 'px)');
+      // console.log('canvas initialized (w: ' + canvasDomWidth + 'px, h: ' + canvasDomHeight + 'px)');
     };
 
     var showCanvasBoundingRect = function(show) {
@@ -577,7 +577,7 @@ define([
 
       // save on server
       $.post('/session/canvas', { image_base64: base64_image }).fail(function () {
-        console.log('session canvas upload failed')
+        // console.log('session canvas upload failed')
       }); 
     };
 
@@ -585,7 +585,7 @@ define([
      * Events
      *******************************/
     $(window).on('resize', function() {
-      console.log('canvas resized');
+      // console.log('canvas resized');
       initCanvas();
     });
 
@@ -718,7 +718,7 @@ define([
           activeSession = null;
           fabricCanvas.clear();
           $('#session-info').text('Please select or create a session');
-          console.log('all sessions deleted');
+          // console.log('all sessions deleted');
           toastr.warning('You need to create a new session to continue', 'All sessions deleted');
         }
       });
@@ -805,7 +805,7 @@ define([
         var group = new fabric.Group(objectsToGroup);
         fabricCanvas.add(group);
 
-        console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
+        // console.log('free-drawing with ' + objectsToGroup.length + ' paths merged');
 
         // create rect with white background
         var rect = new fabric.Rect({
