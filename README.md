@@ -31,7 +31,7 @@ Install debugger with `npm install -g node-inspector` and run `node-debug app.js
 
 ## API
 
-Documentation is also available under [docs/index.html](docs/index.html) (generated with [apiDocs](http://apidocjs.com) `npm install apidoc -g`).
+Documentation is also available under [docs/index.html](doc/index.html) (generated with [apiDocs](http://apidocjs.com), can be installed via `npm install apidoc -g`).
 
 ### Session
 
