@@ -163,7 +163,7 @@ module.exports = function(config, io) {
               Media.findOne({session: session }).sort('-order').exec(function(err, result) {
                 new Media({
                   name: fn,
-                  url: '/files/' + session.name + '/' + fn,
+                  url: '/files/' + session.id + '/' + fn,
                   scale: s,
                   angle: a,
                   x: x,
