@@ -782,6 +782,27 @@ define([
 
     var saveDrawing = function() {
       if (drawnPathObjects.length > 0) {
+
+        // calculate bounds for new object
+        var freeDrawingBound = calculateBounds(drawnPathObjects);
+        freeDrawingBound.left -= freeDrawingPadding;
+        freeDrawingBound.top -= freeDrawingPadding;
+        freeDrawingBound.width += 2 * freeDrawingPadding;
+        freeDrawingBound.height += 2 * freeDrawingPadding;
+
+        // create rect with white background
+        var rect = new fabric.Rect({
+          fill: 'white',
+          stroke: 'rgba(0, 180, 190, 1)',
+          strokeWidth: 2,
+          left: freeDrawingBound.left,
+          top: freeDrawingBound.top,
+          width: freeDrawingBound.width,
+          height: freeDrawingBound.height
+        });
+        fabricCanvas.add(rect);
+        rect.moveTo(fabricCanvas.getObjects().length - drawnPathObjects.length - 1);
+
         var objects = fabricCanvas.getObjects();
         var objectsToGroup = new Array();
 
@@ -801,9 +822,9 @@ define([
         // create overlay image of current canvas to avoid flickering when canvas objects are removed and added
         var overlayImage = $('<img/>').attr({
           src: fabricCanvas.toDataURL(),
-          style: 'position: absolute, z-index: 9999'
+          style: 'position: absolute; z-index: 9999'
         }).appendTo('.canvas-container');
-
+          
         // clean canvas and re-render to avoid that (fragments of) other objects will be saved
         fabricCanvas.clear().renderAll();
 
@@ -815,11 +836,11 @@ define([
 
         // create rect with white background
         var rect = new fabric.Rect({
-          left: group.left - freeDrawingPadding,
-          top: group.top - freeDrawingPadding,
           fill: 'white',
-          width: group.width + 2 * freeDrawingPadding,
-          height: group.height + 2 * freeDrawingPadding
+          left: freeDrawingBound.left,
+          top: freeDrawingBound.top,
+          width: freeDrawingBound.width,
+          height: freeDrawingBound.height
         })
         fabricCanvas.add(rect);
         fabricCanvas.sendToBack(rect);
@@ -859,14 +880,16 @@ define([
               fabricCanvas.add(objectBuffer[i]);
             }
 
-            // remove overlay image
-            overlayImage.remove();
-
             // remove rect
             rect.remove();
 
             // free resources
             delete objectBuffer;
+
+            // remove overlay image
+            overlayImage.fadeOut(300, function() {
+              overlayImage.remove();
+            });
           }); 
         });
       }
