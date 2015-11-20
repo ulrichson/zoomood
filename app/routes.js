@@ -6,39 +6,155 @@ module.exports = function(app, config, io) {
   // GET index
   app.get('/', media.home);
 
-  // GET all media
+  /**
+   * @api {get} /media Get all media
+   * @apiGroup Media
+   *
+   * @apiParam {String} name Media name.
+   *
+   * @apiSuccess {Object[]} -               List of media.
+   * @apiSuccess {String}   -.name          The name.
+   * @apiSuccess {Number}   -.x             The x position on canvas.
+   * @apiSuccess {Number}   -.y             The y position on canvas.
+   * @apiSuccess {Number}   -.scale         The scale.
+   * @apiSuccess {String}   -.url           The URL.
+   * @apiSuccess {Object}   -.x             The x position on canvas.
+   * @apiSuccess {Number}   -.angle         The angle.
+   * @apiSuccess {String}   -.type          The type (e.g. 'whiteboard').
+   * @apiSuccess {Number}   -.order         The order on canvas (layer).
+   * @apiSuccess {Number}   -.session       The session id.
+   */
   app.get('/media', media.getAll);
 
-  // GET one media
+  /**
+   * @api {get} /media/:name Get one media
+   * @apiGroup Media
+   *
+   * @apiParam {String} name Media name.
+   *
+   * @apiSuccess {String}   name          The name.
+   * @apiSuccess {Number}   x             The x position on canvas.
+   * @apiSuccess {Number}   y             The y position on canvas.
+   * @apiSuccess {Number}   scale         The scale.
+   * @apiSuccess {String}   url           The URL.
+   * @apiSuccess {Object}   x             The x position on canvas.
+   * @apiSuccess {Number}   angle         The angle.
+   * @apiSuccess {String}   type          The type (e.g. 'whiteboard').
+   * @apiSuccess {Number}   order         The order on canvas (layer).
+   * @apiSuccess {Number}   session       The session id.
+   */
   app.get('/media/:name', media.show);
 
-  // DELETE one media
+  /**
+   * @api {delete} /media/:name Delete one media
+   * @apiGroup Media
+   *
+   * @apiParam {String} name Media name.
+   *
+   * @apiSuccess {String} message Return message.
+   * @apiSuccess {String} media_name Name of deleted media.
+   */
   app.delete('/media/:name', media.deleteOne);
 
-  // PUT media
+  /**
+   * @api {put} /media/:name Update media
+   * @apiGroup Media
+   *
+   * @apiExample Example usage:
+   *     body:
+   *     {
+   *       "scale": 0.2,
+   *       "x": 30,
+   *       "y": 400,
+   *       "order": 2
+   *     }
+   *
+   * @apiParam {String} name Media name.
+   * @apiParam {Number} scale The scale factor.
+   * @apiParam {Number} x The x position on canvas.
+   * @apiParam {Number} y The y position on canvas.
+   * @apiParam {Number} order The order on canvas (layer).
+   */
   app.put('/media/:name', media.update);
 
-  // POST media
+  /**
+   * @api {post} /media Upload new media
+   * @apiGroup Media
+   *
+   * @apiParam {String} image_base64 Base64 encoded image in png or jpg.
+   *
+   * @apiSuccess {String} message Return message.
+   * @apiSuccess {String} media Uploaded media object.
+   */
   app.post('/media', media.post);
 
-  // POST session
+  /**
+   * @api {post} /session Create new session
+   * @apiGroup Session
+   *
+   * @apiParam {String} [name] Name for session.
+   *
+   * @apiSuccess {String} message Return message.
+   * @apiSuccess {String} session Uploaded session object.
+   */
   app.post('/session', session.post);
 
-  // GET all sessions
+  /**
+   * @api {get} /session Get all sessions
+   * @apiGroup Session
+   *
+   * @apiSuccess {Object[]} sessions            List of sessions.
+   * @apiSuccess {String}   sessions.id         The id.
+   * @apiSuccess {String}   sessions.name       The name.
+   * @apiSuccess {Date}     created             Date when created.
+   * @apiSuccess {Date}     updated             Date when updated.
+   */
   app.get('/session', session.getAll);
 
-  // DETELE all session
+  /**
+   * @api {delete} /session Delete all sessions
+   * @apiGroup Session
+   *
+   * @apiSuccess {String} message Return message.
+   */
   app.delete('/session', session.deleteAll);
 
-  // DETELE one session
+  /**
+   * @api {delete} /session/:id Delete one session
+   * @apiGroup Session
+   *
+   * @apiParam {String} id Session id.
+   *
+   * @apiSuccess {String} message Return message.
+   */
   app.delete('/session/:id', session.deleteOne);
 
-  // GET active session
+  /**
+   * @api {get} /session/active Get active session
+   * @apiGroup Session
+
+   * @apiSuccess {String}   -                   The session id.
+   */
   app.get('/session/active', session.getActive);
 
-  // PUT active session
+  /**
+   * @api {put} /session/:id Set active session
+   * @apiGroup Session
+   *
+   * @apiParam {String} id Session id.
+   *
+   * @apiSuccess {String} message Return message.
+   * @apiSuccess {String} session Session object.
+   */
   app.put('/session/active/:id', session.setActive);
 
-  // POST session canvas
+  /**
+   * @api {post} /session/canvas Upload session canvas to active canvas
+   * @apiGroup Session
+   *
+   * @apiParam {String} image_base64 Base64 encoded image in png or jpg.
+   *
+   * @apiSuccess {String} message Return message.
+   */
   app.post('/session/canvas', session.postCanvas);
 }

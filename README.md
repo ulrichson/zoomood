@@ -31,6 +31,8 @@ Install debugger with `npm install -g node-inspector` and run `node-debug app.js
 
 ## API
 
+Documentation is also available under [docs/index.html](docs/index.html) (generated with [apiDocs](http://apidocjs.com) `npm install apidoc -g`).
+
 ### Session
 
 - Create new session: `curl -X POST localhost:3000/session` or `curl -X POST -H "Content-Type: application/json" -d '{"name":"<name>""}' localhost:3000/session`
