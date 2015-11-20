@@ -58,7 +58,7 @@ SessionSchema.pre('remove', function(next) {
       console.error('Error removing session: ' + err);
     })
     .on('end', function() {
-      rimraf(config.media + session.name, function(err) {
+      rimraf(config.media + session.id, function(err) {
         if (err) {
           console.error('Error removong session directory: ' + err);
         }
