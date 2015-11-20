@@ -177,7 +177,7 @@ module.exports = function(config, io) {
                     return res.status(500).json({ error: 'media upload failed' });
                   }
 
-                  msg = 'Media "' + fn + '" uploaded to session "' + session.name + '"';
+                  msg = 'Media "' + fn + '" uploaded to session "' + session.id + '"';
                   console.info(msg);
                   res.json({ message: 'media upload susccessful', media: data });
 
