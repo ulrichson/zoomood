@@ -26,6 +26,9 @@ block content
     button#btn-cancel-draw.btn.hide
       i.fa.fa-ban
       | &nbsp;Cancel drawing
+    button#btn-delete-media.btn.hide
+      i.fa.fa-trash
+      | &nbsp;Remove selected media
     .btn-group.dropup.pull-right
       button#btn-select-session.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
         i.fa.fa-picture-o
@@ -38,7 +41,7 @@ block content
         li
           a#btn-delete-sessions(href="#")
             i.fa.fa-warning.text-danger(style="width: 25px")
-            span.text-danger &nbsp;Delete all sessions
+            span.text-danger &nbsp;Remove all sessions
         li.divider(role="separator")
 
   //- Modals

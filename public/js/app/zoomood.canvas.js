@@ -187,7 +187,18 @@ define([
           });
         };
 
-        fabricCanvas.on('selection:cleared', postSessionCanvas);
+        fabricCanvas.on('selection:cleared', function(event) {
+          $('#btn-delete-media').addClass('hide');
+          postSessionCanvas();
+        });
+
+        fabricCanvas.on('selection:created', function(event) {
+          $('#btn-delete-media').removeClass('hide');
+        });
+
+        fabricCanvas.on('object:selected', function(event) {
+          $('#btn-delete-media').removeClass('hide');
+        });
 
         fabricCanvas.on('object:modified', function(event) {
           updateMedia(event.target);
@@ -581,6 +592,19 @@ define([
       }); 
     };
 
+    var deleteMedia = function() {
+      if (fabricCanvas.getActiveGroup()) {
+        fabricCanvas.getActiveGroup().forEachObject(function(obj) {
+          ajaxDeleteMedia(obj);
+        });
+        fabricCanvas.discardActiveGroup().renderAll();
+        updateAllMedia();
+      } else if (fabricCanvas.getActiveObject()) {
+        ajaxDeleteMedia(fabricCanvas.getActiveObject());
+        updateAllMedia();
+      }
+    };
+
     /*******************************
      * Events
      *******************************/
@@ -599,19 +623,6 @@ define([
           break;
       }
     }).keydown(function(evt) {
-      var deleteMedia = function() {
-        if (fabricCanvas.getActiveGroup()) {
-          fabricCanvas.getActiveGroup().forEachObject(function(obj) {
-            ajaxDeleteMedia(obj);
-          });
-          fabricCanvas.discardActiveGroup().renderAll();
-          updateAllMedia();
-        } else if (fabricCanvas.getActiveObject()) {
-          ajaxDeleteMedia(fabricCanvas.getActiveObject());
-          updateAllMedia();
-        }
-      };
-
       var sendObject = function(where) {
         if (fabricCanvas.getActiveGroup()) {
           fabricCanvas.getActiveGroup().forEachObject(function(obj) {
@@ -732,6 +743,12 @@ define([
 
     $('#btn-reset-view').click(function() {
       resetView();
+      // showCanvasBoundingRect(true);
+      // setSelection(true);
+    });
+
+    $('#btn-delete-media').click(function() {
+      deleteMedia();
       // showCanvasBoundingRect(true);
       // setSelection(true);
     });
