@@ -27,6 +27,11 @@ npm install -g gulp
 npm install -g apidoc
 ```
 
+The project provides a light-weight interface (read-only) for the MongoDB documents and is available under following urls:
+
+- **Sessions:** [http://localhost:3000/session](http://localhost:3000/session)
+- **Media:** [http://localhost:3000/media](http://localhost:3000/media)
+
 ## Build
 
 - `gulp build` generateds apidoc and compiles less
