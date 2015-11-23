@@ -19,10 +19,9 @@ To setup the project or when new packages are included run following command (in
 npm install
 ```
 
-## Development Environmanet
+## Development Environment
 
 ```
-npm install -g npm
 npm install -g bower
 npm install -g gulp
 npm install -g apidoc
