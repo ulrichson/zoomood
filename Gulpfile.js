@@ -7,16 +7,24 @@ var gulp  = require('gulp'),
     server = require('gulp-livereload'),
     autoprefixer = require('gulp-autoprefixer'),
     apidoc = require('gulp-apidoc'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
+    path = require('path');
 
 // other vars
 var cssRoot = 'public/css/';
+var lessRoot = 'public/less/'
 
-gulp.task('less', function() {
-  gulp.src(cssRoot + 'less/style.less')
-    .pipe(less())
+gulp.task('less', function(done) {
+  gulp.src(lessRoot + 'style.less')
+    .pipe(less({
+      relativeUrls: true
+    }))
     .pipe(autoprefixer())
+    .pipe(gulp.dest(cssRoot))
+    .pipe(cssmin({ keepSpecialComments: 0 }))
+    .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(cssRoot));
+  done();
 })
 
 gulp.task('apidoc', function(done) {
@@ -27,15 +35,11 @@ gulp.task('apidoc', function(done) {
 });
 
 gulp.task('build', ['apidoc', 'less'], function() {
-  gulp.src(cssRoot + 'style.css')
-    .pipe(cssmin())
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest(cssRoot));
 });
 
 gulp.task('default', function () {
   server.listen();
-  gulp.watch('public/css/less/**/*.less', ['less']);
+  gulp.watch(lessRoot + '**/*.less', ['less']);
   gulp.watch(['public/**/*.css','app/**/*']).on('change', function(file) {
     server.changed(file.path);
   });
