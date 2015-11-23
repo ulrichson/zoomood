@@ -1,16 +1,36 @@
-# zoomood
+# Zoomood
 
-A virtual mood board that allows you to organize media on a zoomable canvas.
+Zoomod is a virtual moodboard that allows you to organize media on a zoomable canvas.
+It can e.g. be used on a whiteboard and offers following features:
+
+- Panning and zooming into canvas
+- Upload media via API
+- Create free-drawn media on canvas
+- Adjust media layer position on canvas
+- Transforming media or a group of media on cavnas (move, scale and rotate)
+- Save canvas state as image
+- Organize moodboards into sessions
 
 ## Setup
+
+To setup the project or when new packages are included run following command (install npm and bower depencies):
+
 ```
 npm install
 ```
 
+## Development Environmanet
+
+```
+npm install -g npm
+npm install -g bower
+npm install -g gulp
+npm install -g apidoc
+```
+
 ## Build
 
-- `gulp less` to convert less files into css
-- `bower install` when bower packages for the front-end code changed or are non-existent
+- `gulp build` generateds apidoc and compiles less
 
 ## Run
 
@@ -26,12 +46,16 @@ Install debugger with `npm install -g node-inspector` and run `node-debug app.js
 
 ## Requirements
 
-- node.js
+To run the project the server must meet following requirements:
+
+- Node.js
 - MongoDB
 
 ## API
 
 Documentation is also available under [docs/index.html](doc/index.html) (generated with [apiDocs](http://apidocjs.com), can be installed via `npm install apidoc -g`).
+
+In case of errors the API responds with a HTTP error code and contains an error message in the response `error` field.
 
 ### Session
 
