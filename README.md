@@ -16,6 +16,7 @@ It can e.g. be used on a whiteboard and offers following features:
 To setup the project or when new packages are included run following command (install npm and bower depencies):
 
 ```
+npm install -g bower
 npm install
 ```
 
