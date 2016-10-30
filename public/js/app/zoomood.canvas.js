@@ -418,11 +418,12 @@ define([
         dragStart = null;
       }, false);
 
-      canvas.addEventListener('DOMMouseScroll', handleScroll, false);
-      canvas.addEventListener('mousewheel', handleScroll, false);
+      window.addEventListener('mousewheel', handleScroll, false);
     };
 
     var handleScroll = function(evt) {
+      evt.preventDefault();
+
       if (spacePressed) {
         fabricCanvas.deactivateAllWithDispatch();
         var delta = evt.wheelDelta ? evt.wheelDelta / 40 : evt.detail ? -evt.detail : 0;
