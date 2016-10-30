@@ -23,6 +23,18 @@ module.exports = function(server) {
       }, function(err) {
         if (err) {
           console.error('Error updating media "' + data.name + '" (' + err + ')');
+        } else {
+          socket.broadcast.emit('refresh media', data);
+        }
+      });
+    });
+
+    socket.on('delete media', function(name) {
+      Media.where({ name: name }).findOne(function(err, media) {
+        if (media) {
+          socket.broadcast.emit('delete media', media);
+          media.remove();
+          console.info('Media "' + name + '" deleted');
         }
       });
     });

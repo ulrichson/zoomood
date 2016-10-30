@@ -11,6 +11,37 @@ define([
 //    ], function($, fabric) {
 
   $(function() {
+    /*******************************
+     * Extensions for fabric.js
+     * Based on http://stackoverflow.com/questions/20824019/fabric-js-get-objects-by-name
+     *******************************/
+
+    fabric.Canvas.prototype.getObjectsByName = function(name) {
+      var objectList = [],
+          objects = this.getObjects();
+
+      for (var i = 0, len = this.size(); i < len; i++) {
+        if (objects[i].name && objects[i].name === name) {
+          objectList.push(objects[i]);
+        }
+      }
+
+      return objectList;
+    };
+
+    fabric.Canvas.prototype.getObjectByName = function(name) {
+    var object = null,
+        objects = this.getObjects();
+
+    for (var i = 0, len = this.size(); i < len; i++) {
+      if (objects[i].name && objects[i].name === name) {
+        object = objects[i];
+        break;
+      }
+    }
+
+    return object;
+  };
 
     /*******************************
      * Config
@@ -48,6 +79,26 @@ define([
       // console.log('media was uploaded');
       var animate = data.type && data.type == 'whiteboard' ? false : true;
       ajaxGetMedia(data.name, animate);
+    });
+
+    socket.on('refresh media', function(data) {
+      var obj = fabricCanvas.getObjectByName(data.name);
+      if (obj) {
+        obj.set({
+          angle: data.angle,
+          left: data.x,
+          top: data.y
+        }).scale(data.scale);
+        fabricCanvas.renderAll();
+      }
+    });
+
+    socket.on('delete media', function(data) {
+      var obj = fabricCanvas.getObjectByName(data.name);
+      if (obj) {
+        obj.remove();
+        fabricCanvas.renderAll();
+      }
     });
 
     var updateAllMedia = function() {
@@ -88,7 +139,7 @@ define([
     /*******************************
      * AJAX calls
      *******************************/
-    var ajaxDeleteMedia = function(media) {
+    /*var ajaxDeleteMedia = function(media) {
       $.ajax({
         url: '/media/' + media.name,
         type: 'DELETE',
@@ -104,7 +155,7 @@ define([
           // console.log('media deleted: ' + media.name);
         }
       });
-    };
+    };*/
 
     var ajaxGetMedia = function(name, animate) {
       animate = animate || false;
@@ -596,13 +647,15 @@ define([
     var deleteMedia = function() {
       if (fabricCanvas.getActiveGroup()) {
         fabricCanvas.getActiveGroup().forEachObject(function(obj) {
-          ajaxDeleteMedia(obj);
+          socket.emit('delete media', obj.name);
+          fabricCanvas.remove(obj);
         });
         fabricCanvas.discardActiveGroup().renderAll();
-        updateAllMedia();
       } else if (fabricCanvas.getActiveObject()) {
-        ajaxDeleteMedia(fabricCanvas.getActiveObject());
-        updateAllMedia();
+        var obj = fabricCanvas.getActiveObject();
+        socket.emit('delete media', obj.name);
+        fabricCanvas.remove(obj);
+        fabricCanvas.renderAll();
       }
     };
 
