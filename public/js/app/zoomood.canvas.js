@@ -11,6 +11,9 @@ define([
 //    ], function($, fabric) {
 
   $(function() {
+
+    var saveSessionCanvasIntervalMs = 10 * 1000;
+
     /*******************************
      * Extensions for fabric.js
      * Based on http://stackoverflow.com/questions/20824019/fabric-js-get-objects-by-name
@@ -100,7 +103,7 @@ define([
     var fabricCanvas;
 
     var lastX, lastY;
-    var dragStart, dragged;
+    var dragStart;
 
     var spacePressed = false;
     var selectionEnabled = true;
@@ -278,7 +281,6 @@ define([
 
         fabricCanvas.on('selection:cleared', function(event) {
           $('#btn-delete-media').addClass('hide');
-          postSessionCanvas();
         });
 
         fabricCanvas.on('selection:created', function(event) {
@@ -291,15 +293,12 @@ define([
 
         fabricCanvas.on('object:modified', function(event) {
           updateMedia(event.target);
-          postSessionCanvas();
         });
 
         fabricCanvas.on('object:added', function(event) {
-          postSessionCanvas();
         });
 
         fabricCanvas.on('object:removed', function(event) {
-          postSessionCanvas();
         });
 
         fabricCanvas.on('path:created', function(event) {
@@ -483,31 +482,32 @@ define([
             x: lastX,
             y: lastY
           };
-          dragged = false;
         }
       }, false);
 
       canvas.addEventListener('mousemove', function(evt) {
-        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-        dragged = true;
         if (dragStart) {
+          lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+          lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
           translate(lastX - dragStart.x, lastY - dragStart.y);
           dragStart = {
             x: lastX,
             y: lastY
           };
-
-          // save current state
-          updateAllMedia();
         }
       }, false);
 
       canvas.addEventListener('mouseup', function(evt) {
-        dragStart = null;
+        if (dragStart) {
+          // save current state
+          updateAllMedia();
+          dragStart = null;
+        }
       }, false);
 
       window.addEventListener('mousewheel', handleScroll, false);
+
+      window.addEventListener('beforeunload', postSessionCanvas);
     };
 
     var handleScroll = function(evt) {
@@ -1061,6 +1061,8 @@ define([
     initCanvas();
     ajaxGetMedia();
     populateSession();
+
+    setInterval(postSessionCanvas, saveSessionCanvasIntervalMs);
     // showSplashScreen();
   });
 })
